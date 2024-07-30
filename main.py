@@ -962,9 +962,11 @@ def custom_prebuild_script_call(script_id,chatid):
         try:
             per_call_cost = data['charge']
             call_cost_update = call_cost + per_call_cost
+            print(call_cost_update,per_call_cost)
             c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
-            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
             db.commit()
+            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
+            
         except:
             print("No Audio File")
 
