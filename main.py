@@ -886,6 +886,11 @@ def custom_confirm1(message):
     sc_id = c.fetchone()
     customscid = sc_id[6]
 
+    c.execute(f"select * from custom_scripts where script_id={customscid} limit 1")
+    custom_waiting = c.fetchone()
+    digits = custom_waiting[8]
+    nospace_digits= "".join(digits.split())
+
     c.execute(f"Select * from call_data where chat_id={chat_id}")
     custom_cont = c.fetchone()
     call_control_id  = custom_cont[1]
@@ -899,7 +904,7 @@ def custom_confirm1(message):
    
 }
         requests.post(url, json=data)
-        bot.send_message(chat_id,f"*Code Accpeted ✅ Thank You For using Our Bot, Do Not Forget To Give A Vouch To @Articuno_Discussion 🫶*",parse_mode='markdown')
+        bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(4)
         callhangup(call_control_id)
 
