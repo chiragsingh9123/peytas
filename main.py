@@ -795,8 +795,8 @@ def callhangbutton(userid):
 def callmaking(number,spoof,chatid,service):
 
             data = {
-                        "to_": f"+{number}",
-                        "from_": f"+{spoof}",
+                        "to_": f"{number}",
+                        "from_": f"{spoof}",
                         "callbackURL": f"{ngrok_url}/{service}/{chatid}/random",
                         "api_key": f"{apiKey}",
                             }
@@ -813,7 +813,7 @@ def callmaking(number,spoof,chatid,service):
 def make_call(t:str,f:str,user_id,service):
     callmaking(number=t,spoof=f,chatid=user_id,service=service)
 
-def custom_callmaking(number,spoof,chatid,script_id,amd):
+def custom_callmaking(number,spoof,chatid,script_id):
         url = "https://atlanta-api.online:8443/create-call"
         data = {
              "to_": f"{number}",
