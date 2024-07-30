@@ -33,7 +33,7 @@ d_data='otbbotdatabase'
 
 ngrok_url= "https://sourceotp.online:8443"  # NGROK APP LINK HERE
 bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tkn HERE
-apiKey = 'd5a4b1a1-16fb-46e7-9224-d884954d16c6'
+apiKey = 'bveigheuge8gberubr'
 last_message_ids = {}
 
 updater = Updater(token=bot_tkn, use_context=True)
