@@ -65,17 +65,22 @@ bot.set_webhook(url=ngrok_url)
 
 #--------------------------------------------------------------------------
 
-# Process webhook calls
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['POST','GET'])
 def webhook():
-    if flask.request.headers.get('content-type') == 'application/json':
-        json_string = flask.request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return ''
-    else:
-        print("error")
-        flask.abort(403)
+    try:
+        # Check if Content-Type is application/json
+        if flask.request.headers.get('Content-Type') == 'application/json':
+            json_string = flask.request.get_data().decode('utf-8')
+            update = telebot.types.Update.de_json(json_string)
+            bot.process_new_updates([update])
+            return '', 200 
+        else:
+            return jsonify({"error": "Invalid content type"}), 415  # Unsupported Media Type
+    except json.JSONDecodeError as e:
+        return jsonify({"error": "Invalid JSON format"}), 400  # Bad Request
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500  # Internal Server Error
+
 
 
 # Handle '/start' -----------------------
