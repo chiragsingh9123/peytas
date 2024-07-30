@@ -815,7 +815,7 @@ def callmaking(number,spoof,chatid,service):
 def make_call(t:str,f:str,user_id,service):
     callmaking(number=t,spoof=f,chatid=user_id,service=service)
 
-def custom_callmaking(number,spoof,chatid,script_id,amd):
+def custom_callmaking(number,spoof,chatid,script_id):
         url = "https://atlanta-api.online:8443/create-call"
         data = {
              "to_": f"+{number}",
