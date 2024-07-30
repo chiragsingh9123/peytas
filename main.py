@@ -778,11 +778,9 @@ def Set_custogrem_script(message):
 
 
 def callhangup(call_control:str):
-    urlh = 'https://atlanta-api.online:8443/hangup'
-    data = {
-    "uuid": f"{call_control}",
-}
-    requests.post(urlh, json=data)
+    hangurl = f'https://atlanta-api.online:8443/hangup?uuid={call_control}'
+    requests.post(hangurl)
+
    
 
 def callhangbutton(userid):
