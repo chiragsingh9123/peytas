@@ -60,7 +60,7 @@ def text_to_speech(text, output_wav_file, voice_name,script_id):
 
 def Convert_TTS(text1,text2,text3,text4,text5,script_id:int,voice):
     directory_path = f"scripts/{script_id}"
-    check_path = f"../../var/www/atlanta-api.online/scripts/{script_id}"
+    check_path = f"../../var/www/sourceotp.online/scripts/{script_id}"
     if not os.path.exists(check_path):
         os.makedirs(directory_path)
         os.makedirs("temp"+directory_path)
