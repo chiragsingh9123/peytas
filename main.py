@@ -968,6 +968,18 @@ def custom_prebuild_script_call(script_id,chatid):
 
     elif event == "call.hangup":
         try:
+            resp = data['recording_url']
+            response = requests.get(resp)
+            payload = {
+                'chat_id': {chatid},
+                'title': 'articuno-voice.mp3',
+                'parse_mode': 'HTML'
+            }
+            files = {
+                'audio': response.content,
+            }
+            requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
+            
             per_call_cost = data['charge']
             call_cost_update = call_cost + per_call_cost
             print(call_cost_update,per_call_cost)
