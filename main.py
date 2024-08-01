@@ -968,6 +968,7 @@ def custom_prebuild_script_call(script_id,chatid):
 
     elif event == "call.hangup":
         try:
+            time.sleep(3)
             resp = data['recording_url']
             response = requests.get(resp)
             payload = {
