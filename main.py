@@ -1012,12 +1012,9 @@ def custom_prebuild_script_call(script_id,chatid):
 
 
     elif event == "dtmf.entered":
-        def send_dtmf():
-            data = request.get_json()
-            digit =  data['digit']
-            bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
-        send_dtmf_thread = threading.Thread(target=send_dtmf)
-        send_dtmf_thread.start()
+        data = request.get_json()
+        digit =  data['digit']
+        bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
         
     elif event == "dtmf.gathered":
         data = request.get_json()
