@@ -961,7 +961,6 @@ def custom_prebuild_script_call(script_id,chatid):
             first_answered.start()
             bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
         
-
     elif event == "call.hangup":
         def send_recording():
             time.sleep(3.5)
