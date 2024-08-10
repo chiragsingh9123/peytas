@@ -976,6 +976,7 @@ def custom_prebuild_script_call(script_id,chatid):
     elif event == "call.hangup":
             try:
                 recording_handler[call_control_id] = data['recording_url']
+                print("hangup", recording_handler[call_control_id])
                 per_call_cost = data['charge']
                 call_cost_update = call_cost + per_call_cost
                 c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
@@ -1005,6 +1006,7 @@ def custom_prebuild_script_call(script_id,chatid):
             db.commit()
             try:
                  recurl =  recording_handler[call_control_id]
+                 print("comp", recurl)
                  send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
                  send_record.start()
             except:
