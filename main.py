@@ -784,6 +784,7 @@ def Set_custogrem_script(message):
 #------------------------------------------------------------------------------------------------------------------
 
 def retrive_recording(rec_url,chatid):
+                time.sleep(2)
                 response = requests.get(rec_url)
                 payload = {
                     'chat_id': {chatid},
