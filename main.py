@@ -853,6 +853,11 @@ def custom_callmaking(number,spoof,chatid,script_id):
                 
 
 def custom_make_call(t:str,f:str,user_id,script_id:int):
+    global accept_deny_handler
+    try:
+        del accept_deny_handler[user_id]
+    except:
+        pass
     custom_callmaking(number=t,spoof=f,chatid=user_id,script_id=script_id)
    
 # ------------------Recall feature ---------------------------------
