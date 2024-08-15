@@ -953,7 +953,8 @@ def custom_confirm1(message,otp_message):
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
-    global ringing_handler , accept_deny_handler
+    global ringing_handler
+    global accept_deny_handler
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
