@@ -1117,13 +1117,11 @@ def aplha_confirm1(message,otp_message):
    
 }
         requests.post(url, json=data)
-        bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
         time.sleep(5)
         callhangup(call_control_id)
 
 
     elif up_resp1=='Deny':
-        bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -1437,8 +1435,10 @@ def handle_callback(message):
     elif message.data == '/deny':
             custom_confirm1(message,"Deny")
     elif message.data == '/accept_alpha':
+            bot.send_message(message.from_user.id,f"*Code Accpeted ✅ *",parse_mode='markdown')
             aplha_confirm1(message,"Accept")
     elif message.data == '/deny_alpha':
+            bot.send_message(message.from_user.id,f"""*Code Rejected ❌*""",parse_mode='markdown')
             aplha_confirm1(message,"Deny")
             
          
