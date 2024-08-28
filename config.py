@@ -153,6 +153,17 @@ def otp_grabbed(userid:int,otp):
     db.commit()
     return True
 
+def alpha_otp_grabbed(userid:int):
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    c.execute(F"SELECT * FROM users WHERE user_id={userid} LIMIT 1")
+    chk = c.fetchone()
+    bfor = chk[9]
+    after =bfor +1
+    c.execute(f"Update users set otp_grabed='{after}' where user_id={userid}")
+    db.commit()
+    return True
+
 
 def call_update(userid:int):
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
