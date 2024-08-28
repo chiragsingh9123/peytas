@@ -897,7 +897,7 @@ def recall_now(message):
                         try: 
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
-                            if last_script[2]!='custom':
+                            if last_script[2]=='call':
                                  make_call(vict,caller,id,f'{last_script[2]}')
                             elif last_script[2]=='custom':
                                  c.execute(f"select * from users where user_id={id} limit 1")
@@ -950,7 +950,7 @@ def custom_confirm1(message,otp_message):
 }
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
-        time.sleep(3)
+        time.sleep(6)
         callhangup(call_control_id)
 
 
@@ -1118,7 +1118,7 @@ def aplha_confirm1(message,otp_message):
 }
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
-        time.sleep(3)
+        time.sleep(5)
         callhangup(call_control_id)
 
 
