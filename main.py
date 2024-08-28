@@ -82,6 +82,7 @@ def webhook():
     except json.JSONDecodeError as e:
         return jsonify({"error": "Invalid JSON format"}), 400  # Bad Request
     except Exception as e:
+        print(e)
         return jsonify({"error": "An error occurred"}), 500  # Internal Server Error
 
 
