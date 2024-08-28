@@ -403,7 +403,7 @@ def Features(message):
 
 <b>• Digit Detection:</b> Ability to interpret keypad input accurately.
 
-<b>• Automation (Soon) In V2:</b> ❌""",message.from_user.id, message_id=last_message_ids[message.from_user.id], reply_markup=keyboard, parse_mode='HTML')
+<b>• Alptha Detection:</b>  Ability to detect Alpthabate captures """,message.from_user.id, message_id=last_message_ids[message.from_user.id], reply_markup=keyboard, parse_mode='HTML')
     except:
          print("Error in features")
          send_welcome(message)
