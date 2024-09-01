@@ -147,7 +147,7 @@ def send_welcome(message):
     keyboard.add(item7,item6)
     keyboard.add(item8)
     mes2 = bot.send_photo(message.from_user.id,caption=f"""
-🚀 *ARTICUNO OTP - BOT* 🚀
+🚀 ARTICUNO OTP - BOT 🚀
 
 i’m here to make IVR calls and capture DTMF inputs with any custom caller ID
 
