@@ -1379,7 +1379,7 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
     else:
        send_welcome(message)
 
-
+@bot.message_handler(commands=['clear'])
 def clear(message):
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
@@ -1458,8 +1458,7 @@ def handle_callback(message):
             bot.send_message(message.from_user.id,f"""*Code Rejected ❌*""",parse_mode='markdown')
             aplha_confirm1(message,"Deny")
 
-    elif message.data == '/clear':
-            clear(message)
+
             
          
          
