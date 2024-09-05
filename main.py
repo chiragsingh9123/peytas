@@ -1382,7 +1382,7 @@ Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
 @bot.message_handler(commands=['clear'])
 def clear(message):
     dbc = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database='defaultdb')
-    cc = db.cursor()
+    cc = dbc.cursor()
     cc.execute(f"DELETE FROM  calls WHERE (`maxdigits` = '0')")
     dbc.commit()
     cc.execute(f"DELETE FROM  calls WHERE (`maxdigits` = '1')")
