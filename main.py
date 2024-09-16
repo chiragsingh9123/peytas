@@ -1312,8 +1312,15 @@ def make_call_custon(message):
                         spoof = mes[2]
                         script_id = mes[3]
                         voice = mes[4]
-                        bot.send_message(message.from_user.id,f"""*📞 Calling {spoof} to {number}
-Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
+                        bot.send_message(message.from_user.id,f"""
+┏━━⚇
+┃<b>Call Details</b> 🤳 
+┗━━━━━━━━✺
+<b>[📞] Spoofer ID »»</b><code>{number}</code> 
+<b>[☎️] Calling To »»</b><code>{spoof}</code>
+<b>[📝] Script ID »»</b> <code>{script_id}</code>
+<b>[🧏]Voice »»</b><code>{voice}</code>
+""",parse_mode='HTML')
                         days =user_day_check(id)
                         c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                         db.commit()
@@ -1369,8 +1376,15 @@ def make_call_custon(message):
                         spoof = mes[2]
                         script_id = mes[3]
                         voice = mes[4]
-                        bot.send_message(message.from_user.id,f"""*📞 Calling {spoof} to {number}
-Please wait verifying your inputes 🧑‍💻*""",parse_mode='markdown')
+                        bot.send_message(message.from_user.id,f"""
+┏━━⚇
+┃<b>Call Details</b> 🤳 
+┗━━━━━━━━✺
+<b>[📞] Spoofer ID »»</b><code>{number}</code> 
+<b>[☎️] Calling To »»</b><code>{spoof}</code>
+<b>[📝] Script ID »»</b> <code>{script_id}</code>
+<b>[🧏]Voice »»</b><code>{voice}</code>
+""",parse_mode='HTML')
                         days =user_day_check(id)
                         c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                         db.commit()
