@@ -1050,6 +1050,7 @@ def custom_prebuild_script_call(script_id,chatid):
               keyboard.add(item)
               mesid1 = bot.send_message(chatid,f"""Repeat otp script (part 2) again.""",reply_markup=keyboard, parse_mode='HTML').message_id
               last_message_ids[chatid]=mesid1
+              print(last_message_ids)
          
 
     elif event == "call.complete":
