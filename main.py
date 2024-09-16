@@ -1043,7 +1043,7 @@ def custom_prebuild_script_call(script_id,chatid):
             except:
                  print("Recording Error")
 
-    elif event == 'playback.finished':
+    elif event == 'playback.finishe':
          if playback_handler[str(chatid)] == 1:
               keyboard = types.InlineKeyboardMarkup(row_width=1)
               item = types.InlineKeyboardButton(text="🔊Play Again🔂",callback_data="/repeat_audio")
