@@ -1364,8 +1364,8 @@ def make_call_custon(message):
 ┏━━⚇
 ┃<b>Call Details</b> 🤳 
 ┗━━━━━━━━✺
-<b>[📞] Spoofer ID »»</b><code>{number}</code> 
-<b>[☎️] Calling To »»</b><code>{spoof}</code>
+<b>[☎️] Calling To »»</b><code>{number}</code>
+<b>[📞] Spoofer ID »»</b><code>{spoof}</code> 
 <b>[📝] Script ID »»</b> <code>{script_id}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
