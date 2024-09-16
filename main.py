@@ -1050,7 +1050,7 @@ def custom_prebuild_script_call(script_id,chatid):
          
 
     elif event == "call.complete":
-            global last_message_ids
+            
             mes = "Call Ended ☎️"
             keyboard = types.InlineKeyboardMarkup(row_width=2)
             item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
