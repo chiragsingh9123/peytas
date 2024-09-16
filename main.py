@@ -795,7 +795,9 @@ def play_script_again(chatid):
     "maxdigits": f"{nospace_digits1}",
     
 }
-    requests.post(url3, json=data)
+    
+    r = requests.post(url3, json=data)
+    print(r.text)
     c.close()
 
 
