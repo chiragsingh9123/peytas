@@ -866,7 +866,7 @@ def custom_callmaking(number,spoof,chatid,script_id):
              "to_": f"{number}",
               "from_": f"{spoof}",
               "callbackURL": f"{ngrok_url}/{script_id}/{chatid}/custom",
-              "api_key": f"{apiKey}",
+              "api_key": f"{main_api['api']}",
                }
         resp = requests.post(url, json=data)
         res = json.loads(resp.text)
@@ -884,7 +884,7 @@ def alpha_callmaking(number,spoof,chatid,script_id):
              "to_": f"{number}",
               "from_": f"{spoof}",
               "callbackURL": f"{ngrok_url}/{script_id}/{chatid}/alpha",
-              "api_key": f"{apiKey}",
+              "api_key": f"{main_api['api']}",
                }
         resp = requests.post(url, json=data)
         res = json.loads(resp.text)
