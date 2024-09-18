@@ -32,6 +32,10 @@ d_data='otbbotdatabase'
 ngrok_url= "https://sourceotp.online:8443"  # NGROK APP LINK HERE
 bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tkn HERE
 apiKey = '741852963741852963789456123'
+apiKey2 = "61e03c30-8466-46e3-8725-ca33hfueffhf"
+
+main_api ={"api":apiKey}
+
 last_message_ids = {}
 ringing_handler = []
 recording_handler = {}
@@ -1481,6 +1485,16 @@ def clear(message):
     dbc.commit()
     bot.send_message(message.from_user.id,f"""*Logs Cleared*""",parse_mode='markdown')
     dbc.close()
+
+@bot.message_handler(commands=['switch'])
+def main_api(message):
+    if main_api['api']==apiKey:
+        main_api['api']=apiKey2  
+    elif main_api['api']==apiKey2:
+         main_api['api']=apiKey
+    bot.send_message(message.from_user.id,f"*Api switched to {main_api['api']} ✅ *",parse_mode='markdown')
+
+
 
 
 
