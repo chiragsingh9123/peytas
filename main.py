@@ -1487,7 +1487,7 @@ def clear(message):
     dbc.close()
 
 @bot.message_handler(commands=['switch'])
-def main_api(message):
+def main_api_key(message):
     global main_api
     if main_api['api']==apiKey:
         main_api['api']=apiKey2  
