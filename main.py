@@ -1488,6 +1488,7 @@ def clear(message):
 
 @bot.message_handler(commands=['switch'])
 def main_api(message):
+    global main_api
     if main_api['api']==apiKey:
         main_api['api']=apiKey2  
     elif main_api['api']==apiKey2:
