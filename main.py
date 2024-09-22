@@ -22,8 +22,8 @@ from tts import Convert_TTS
 
 
 d_user ='doadmin'
-d_host ='db-mysql-blr1-91377-do-user-17342949-0.m.db.ondigitalocean.com'
-d_pass ='AVNS_BefuzTdI8mN48CtVs8J'
+d_host ='db-mysql-blr1-43509-do-user-17845394-0.f.db.ondigitalocean.com'
+d_pass ='AVNS_Z6N6a3MQhUDXd5I2-ES'
 d_port =25060
 d_data='otbbotdatabase'
 
