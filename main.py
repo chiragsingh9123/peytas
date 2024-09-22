@@ -34,7 +34,7 @@ bot_tkn ='7229632476:AAFZHpaFIZzOJrskzphIfMoTsDyjSlZWwoc'  # YOUR BOT API bot_tk
 apiKey = '741852963741852963789456123'
 apiKey2 = "61e03c30-8466-46e3-8725-ca33hfueffhf"
 
-main_api ={"api":apiKey}
+main_api ={"api":apiKey2}
 print(main_api)
 last_message_ids = {}
 ringing_handler = []
