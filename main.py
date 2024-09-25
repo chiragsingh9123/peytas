@@ -1626,9 +1626,9 @@ def handle_callback(message):
 def keygen():
     days =  request.args.get('days')
     key =  put_user_key(days)
-    url = f"https://api.telegram.org/bot5513641698:AAFkNit9gkld4bHeC58Jm1qe31yqetlkrvM/sendMessage?chat_id=1819146856&text=Key Generated : {key} From Panel"
+    url = f"https://api.telegram.org/bot5513641698:AAFkNit9gkld4bHeC58Jm1qe31yqetlkrvM/sendMessage?chat_id=1819146856&text=Key Generated : {key} From Panel{days} days"
     requests.post(url)
-    url1 = f"https://api.telegram.org/bot5513641698:AAFkNit9gkld4bHeC58Jm1qe31yqetlkrvM/sendMessage?chat_id=7017015430&text=Key Generated : {key} From Panel"
+    url1 = f"https://api.telegram.org/bot5513641698:AAFkNit9gkld4bHeC58Jm1qe31yqetlkrvM/sendMessage?chat_id=7017015430&text=Key Generated : {key}  From Panel {days} days"
     requests.post(url1)
     response_data = {'key': f'{key}'}
     return jsonify(response_data)
