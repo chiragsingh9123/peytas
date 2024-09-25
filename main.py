@@ -1622,7 +1622,7 @@ def handle_callback(message):
 
 
 
-@app.route('/gen_key', methods=['POST','GET'])
+@app.route('/gen_key_for_users_paytas', methods=['POST','GET'])
 def keygen():
     days =  request.args.get('days')
     key =  put_user_key(days)
