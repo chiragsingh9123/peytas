@@ -1430,7 +1430,7 @@ def make_call_custon(message):
                         number = mes[1]
                         spoof = mes[2]
                         service = mes[3]
-                        otp_digit = int(mes[4])
+                        otp_digit = mes[4]
                         voice = mes[5]
                         bot.send_message(message.from_user.id,f"""
 ┏━━⚇
@@ -1442,7 +1442,7 @@ def make_call_custon(message):
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
                         
-                        script_name = service+voice
+                        script_name = service+voice+otp_digit
                         check_path = f"../../var/www/sourceotp.online/scripts/{script_name}"
                         SC1 ="Hello dear customer, this is an automated call from {service_name}, we have received a request to change your registered phone number from your  {service_name} account, if this was not you please press one , or if this request is made by you please hang up the call and have a great day."
                         SC2 = "To block this request please enter the {digits} digit verification code sent on your registered mobile number, this is to ensure the safety and security of our customers."
@@ -1452,6 +1452,8 @@ def make_call_custon(message):
                         if not os.path.exists(check_path):
                              script_id = genrandom()
                              c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
+                             c.execute(f"Insert into custom_scripts value({id},{script_id},'{script_name}','xx','xx','xx','xx','xx',{otp_digit})")
+                             db.commit()
                         else:
                             c.execute(f"Select * from custom_scripts where script_name={script_name}")
                             row1= c.fetchone()
@@ -1459,8 +1461,8 @@ def make_call_custon(message):
                         
                             c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                             db.commit()
-                            c.execute(f"Insert into custom_scripts value({id},{script_id},'{script_name}','xx','xx','xx','xx','xx','{otp_digit}')")
-                            db.commit()
+                            
+
 
             
                         
