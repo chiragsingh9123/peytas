@@ -1459,7 +1459,7 @@ def make_call_custon(message):
                         
                             c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                             db.commit()
-                            c.execute(f"Insert into custom_scripts value({id},{script_id},'{script_name}','xx','xx','xx','xx','xx',{otp_digit})")
+                            c.execute(f"Insert into custom_scripts value({id},{script_id},'{script_name}','xx','xx','xx','xx','xx','{otp_digit}')")
                             db.commit()
 
             
