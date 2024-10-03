@@ -1455,7 +1455,7 @@ def make_call_custon(message):
                              c.execute(f"Insert into custom_scripts value({id},{script_id},'{script_name}','xx','xx','xx','xx','xx',{otp_digit})")
                              db.commit()
                         else:
-                            c.execute(f"Select * from custom_scripts where script_name={script_name}")
+                            c.execute(f"Select * from custom_scripts where script_name='{script_name}'")
                             row1= c.fetchone()
                             script_id = row1[1]
                         
