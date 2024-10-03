@@ -918,8 +918,8 @@ def recall_now(message):
                         try: 
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
-                            if last_script[2]=='call':
-                                 pass
+                            if last_script[2]!='call':
+                                make_call(vict,caller,id,f'{last_script[2]}')
                             elif last_script[2]=='custom':
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
@@ -928,8 +928,8 @@ def recall_now(message):
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
                                  alpha_make_call(vict,caller,id,clast_script[6])
-                            else:
-                                 make_call(vict,caller,id,f'{last_script[2]}')
+                          
+                                 
                         except:
                             print("Unknown Error Recalling")
                 elif days==0:    
