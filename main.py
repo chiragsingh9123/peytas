@@ -43,7 +43,7 @@ last_accept_deny = {}
 playback_handler = {}
 
 
-updater = Updater(token=bot_tkn, use_context=True)
+updater = Updater(token=bot_tkn, use_context=True,threaded=False)
 dispatcher = updater.dispatcher
 
 try:
@@ -918,8 +918,8 @@ def recall_now(message):
                         try: 
                             c.execute(f"select * from call_data where chat_id={id} limit 1")
                             last_script = c.fetchone()
-                            if last_script[2]!='call':
-                                make_call(vict,caller,id,f'{last_script[2]}')
+                            if last_script[2]=='call':
+                                 pass
                             elif last_script[2]=='custom':
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
@@ -928,8 +928,8 @@ def recall_now(message):
                                  c.execute(f"select * from users where user_id={id} limit 1")
                                  clast_script = c.fetchone()
                                  alpha_make_call(vict,caller,id,clast_script[6])
-                          
-                                 
+                            else:
+                                 make_call(vict,caller,id,f'{last_script[2]}')
                         except:
                             print("Unknown Error Recalling")
                 elif days==0:    
@@ -1634,8 +1634,8 @@ def make_call_custon(message):
     if row!=None :
         if row[3]!='ban':
             if user_day_check(id)>0:
-                        mes =(message.text).split()
-                    
+                    mes =(message.text).split()
+                    try:
                         number = mes[1]
                         spoof = mes[2]
                         service = mes[3]
@@ -1678,7 +1678,8 @@ def make_call_custon(message):
                         db.commit()
                         call_update(id)
                         b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
-                    
+                    except:
+                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
             else:
                    bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
