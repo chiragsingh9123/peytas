@@ -19,7 +19,7 @@ from flask_cors import CORS
 from flask import Flask, jsonify
 import ssl
 from tts import Convert_TTS
-
+import os
 
 d_user ='doadmin'
 d_host ='db-mysql-blr1-43509-do-user-17845394-0.f.db.ondigitalocean.com'
@@ -1441,20 +1441,30 @@ def make_call_custon(message):
 <b>[📝] Script ID »»</b> <code>{service}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
-                        script_id = service + voice
-                        c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
-                        db.commit()
-
+                        
+                        script_name = service+voice
+                        check_path = f"../../var/www/sourceotp.online/scripts/{script_name}"
                         SC1 ="Hello dear customer, this is an automated call from {service_name}, we have received a request to change your registered phone number from your  {service_name} account, if this was not you please press one , or if this request is made by you please hang up the call and have a great day."
                         SC2 = "To block this request please enter the {digits} digit verification code sent on your registered mobile number, this is to ensure the safety and security of our customers."
                         SC3 = "Please wait, while we verify your identity."
                         SC4 = "The code that you have entered was expired or invalid, please enter the correct verification code that you received on your registered Phone number."
                         SC5 = "Thank you, Your Number change Attempt has been blocked, thank you for cooperating with us."
-
-                        c.execute(f"Insert into custom_scripts value({id},{script_id},'xx','xx','xx','xx','xx','xx',{otp_digit})")
-                        db.commit()
+                        if not os.path.exists(check_path):
+                             script_id = genrandom()
+                             c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
+                        else:
+                            c.execute(f"Select * from custom_scripts where script_name={script_name}")
+                            row1= c.fetchone()
+                            script_id = row1[1]
                         
-                        Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_id,voice)
+                            c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
+                            db.commit()
+                            c.execute(f"Insert into custom_scripts value({id},{script_id},'xx','xx','xx','xx','xx','xx',{otp_digit})")
+                            db.commit()
+
+            
+                        
+                        Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_name,voice)
                         c.execute(f"Select * from users where user_id={id}")
                         row= c.fetchone()
                         call_s1 = row[6]
