@@ -1450,17 +1450,15 @@ def make_call_custon(message):
                         SC3 = "Please wait, while we verify your identity."
                         SC4 = "The code that you have entered was expired or invalid, please enter the correct verification code that you received on your registered Phone number."
                         SC5 = "Thank you, Your Number change Attempt has been blocked, thank you for cooperating with us."
-                        
-                        
+
+                        c.execute(f"Insert into custom_scripts value({id},{script_id},'xx','xx','xx','xx','xx','xx',{otp_digit})")
+                        db.commit()
                         
                         Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_id,voice)
                         c.execute(f"Select * from users where user_id={id}")
                         row= c.fetchone()
                         call_s1 = row[6]
                         
-                        c.execute(f"Select * from users where user_id={id}")
-                        row= c.fetchone()
-                        call_s1 = row[6]
                         if (call_s1!=0):
                 
                                 c.execute(f"update call_data set last_service='custom' where chat_id={id} ")
