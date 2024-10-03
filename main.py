@@ -1634,8 +1634,8 @@ def make_call_custon(message):
     if row!=None :
         if row[3]!='ban':
             if user_day_check(id)>0:
-                    mes =(message.text).split()
-                    try:
+                        mes =(message.text).split()
+                    
                         number = mes[1]
                         spoof = mes[2]
                         service = mes[3]
@@ -1678,8 +1678,7 @@ def make_call_custon(message):
                         db.commit()
                         call_update(id)
                         b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
-                    except:
-                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
+                    
             else:
                    bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
