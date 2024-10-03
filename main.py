@@ -43,7 +43,7 @@ last_accept_deny = {}
 playback_handler = {}
 
 
-``
+
 try:
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
 except mysql.connector.Error as err:
