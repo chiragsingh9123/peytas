@@ -43,9 +43,7 @@ last_accept_deny = {}
 playback_handler = {}
 
 
-updater = Updater(token=bot_tkn, use_context=True,threaded=False)
-dispatcher = updater.dispatcher
-
+``
 try:
     db = mysql.connector.connect(user=d_user, password=d_pass,host=d_host, port=d_port,database=d_data)
 except mysql.connector.Error as err:
@@ -66,7 +64,7 @@ else:
 app = Flask(__name__)
 CORS(app)
 # Bot connection
-bot = telebot.TeleBot(bot_tkn, threaded=False)
+bot = telebot.TeleBot(bot_tkn, threaded=True,skip_pending =True)
 bot.remove_webhook()
 bot.set_webhook(url=ngrok_url)
 
